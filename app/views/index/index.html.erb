@@ -1,0 +1,12 @@
+<h1>
+  CareerCompass
+</h1>
+
+<%= button_to "Courses", courses_path, method: :get %>
+<% if authenticated? %>
+  <%= button_to "Profile", users_path, method: :get %>
+  <%= button_to "Log out", session_path, method: :delete %>
+<% else %>
+  <%= button_to "Sign In", new_session_path, method: :get %>
+  <%= button_to "Sign Up", new_user_path, method: :get %>
+<% end %>

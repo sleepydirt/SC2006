@@ -1,0 +1,11 @@
+<%= form_with model: @user do |form| %>
+  <%= form.text_field :username, placeholder: true %>
+  <br>
+  <%= form.email_field :email_address, placeholder: true %>
+  <br>
+  <%= form.password_field :password, placeholder: true %>
+  <br>
+  <%= form.password_field :password_confirmation, placeholder: true %>
+  <br>
+  <%= form.submit "Sign Up" %>
+<% end %>
