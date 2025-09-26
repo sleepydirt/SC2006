@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  allow_unauthenticated_access only: [:new, :create]
+  allow_unauthenticated_access only: [ :new, :create ]
 
   def index
   end
@@ -20,6 +20,6 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.expect(user: [:username, :email_address, :password, :password_confirmation])
+    params.expect(user: [ :username, :email_address, :password, :password_confirmation ])
   end
 end

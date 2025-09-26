@@ -11,7 +11,7 @@
 require "csv"
 
 data = File.read(Rails.root.join("db", "GraduateEmploymentSurveyNTUNUSSITSMUSUSSSUTD.csv"))
-data = CSV.parse(data, :headers => :true)
+data = CSV.parse(data, headers: :true)
 
 data.each do |row|
   c = Course.new(row)
