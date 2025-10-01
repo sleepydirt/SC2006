@@ -31,7 +31,7 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <% if flash[:alert] %>
-                    <span class="text-danger small">Wrong email or password!</span>
+                    <span class="text-danger small"><%= flash[:alert] %></span>
                 <% else %>
                     <span></span>
                 <% end %>
