@@ -81,6 +81,16 @@
       </div>
     </nav>
 
+    <%# flash auth_required warning for unauthorised actions %>
+    <% if flash[:auth_required] %>
+      <div class="container mt-3">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <%= flash[:auth_required] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
