@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Sc2006" %></title>
+    <title><%= content_for(:title) || "Career Compass" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
+    <%= yield(:head) if content_for?(:head) %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
@@ -16,6 +16,7 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -24,7 +25,62 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   </head>
 
-  <body>
+  <body class="bg-light">
+
+    <%# navbar %>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-bg">
+      <div class="container-fluid m-3">
+        <%= link_to "CareerCompass", root_path, class: "navbar-brand fw-semibold" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between align-items-lg-center" id="mainNav">
+          <ul class="navbar-nav position-absolute top-50 start-50 translate-middle gap-lg-3 d-none d-lg-flex">
+            <li class="nav-item">
+              <%= link_to "Trends", trends_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= button_to search_path, method: :get, form_class: "d-inline", class: "btn btn-primary d-flex align-items-center gap-2" do %>
+                <span>Search</span>
+                <i class="bi bi-search"></i>
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Compare", compare_path, class: "nav-link" %>
+            </li>
+          </ul>
+
+          <%# buttons for mobile view%>
+          <ul class="navbar-nav d-lg-none gap-2 mb-3">
+            <li class="nav-item">
+              <%= link_to "Trends", trends_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= button_to search_path, method: :get, form_class: "d-inline w-100", class: "btn btn-primary d-flex align-items-center gap-2" do %>
+                <span>Search</span>
+                <i class="bi bi-search"></i>
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Compare", compare_path, class: "nav-link" %>
+            </li>
+          </ul>
+
+          <div class="ms-lg-auto d-flex align-items-center gap-2">
+            <% if authenticated? %>
+              <%= link_to "Profile", users_path, class: "btn btn-outline-light" %>
+              <%= button_to "Log out", session_path, method: :delete, form_class: "d-inline", class: "btn btn-outline-light" %>
+            <% else %>
+              <%= link_to new_session_path, class: "btn btn-light text-primary d-flex align-items-center gap-2" do %>
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Login</span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
     <%= yield %>
   </body>
 </html>
