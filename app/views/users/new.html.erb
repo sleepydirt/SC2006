@@ -15,6 +15,11 @@
     <div class="mb-3">
       <label for="password_confirmation" class="form-label fw-bold">Confirm Password</label>
       <%= form.password_field :password_confirmation, placeholder: true, class: "form-control py-3" %>
+      <% @user.errors.full_messages_for(:password_confirmation).each do |message| %>
+        <p class="text-danger">
+          <%= message %>
+        </p>
+      <% end %>
     </div>
     <%= form.submit "Sign Up", class: "btn btn-primary rounded-4 p-3 w-100 fw-bold mb-3" %>
     <div class="position-relative mb-4">
