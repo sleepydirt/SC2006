@@ -1,0 +1,9 @@
+courses/query
+
+<ul>
+  <% @courses.each do |course| %>
+    <li>
+      <%= course.university %>: <%= course.degree %>
+    </li>
+  <% end %>
+</ul>

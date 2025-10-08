@@ -27,9 +27,9 @@
 
   <body class="bg-light">
 
-    <%# navbar %>
+    <%# Navbar %>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-bg">
-      <div class="container-fluid m-3">
+      <div class="container-fluid">
         <%= link_to "CareerCompass", root_path, class: "navbar-brand fw-semibold" %>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
           <span class="navbar-toggler-icon"></span>
@@ -50,7 +50,7 @@
             </li>
           </ul>
 
-          <%# buttons for mobile view%>
+          <%# Buttons for mobile view %>
           <ul class="navbar-nav d-lg-none gap-2 mb-3">
             <li class="nav-item">
               <%= link_to "Trends", trends_path, class: "nav-link" %>
@@ -81,7 +81,7 @@
       </div>
     </nav>
 
-    <%# flash auth_required warning for unauthorised actions %>
+    <%# Flash auth_required warning for unauthorised actions %>
     <% if flash[:auth_required] %>
       <div class="container mt-3">
         <div class="alert alert-warning alert-dismissible fade show" role="alert">

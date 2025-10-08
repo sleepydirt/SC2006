@@ -1,11 +1,29 @@
-<%= form_with model: @user do |form| %>
-  <%= form.text_field :username, placeholder: true %>
-  <br>
-  <%= form.email_field :email_address, placeholder: true %>
-  <br>
-  <%= form.password_field :password, placeholder: true %>
-  <br>
-  <%= form.password_field :password_confirmation, placeholder: true %>
-  <br>
-  <%= form.submit "Sign Up" %>
-<% end %>
+<div class="d-flex align-items-center justify-content-center" style="height: calc(100vh - 56px);">
+  <%= form_with model: @user, class: "w-25" do |form| %>
+    <div class="mb-3">
+      <label for="username" class="form-label fw-bold">Username</label>
+      <%= form.text_field :username, placeholder: true, class: "form-control py-3" %>
+    </div>
+    <div class="mb-3">
+      <label for="email_address" class="form-label fw-bold">Email Address</label>
+      <%= form.email_field :email_address, placeholder: true, class: "form-control py-3" %>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label fw-bold">Password</label>
+      <%= form.password_field :password, placeholder: true, class: "form-control py-3" %>
+    </div>
+    <div class="mb-3">
+      <label for="password_confirmation" class="form-label fw-bold">Confirm Password</label>
+      <%= form.password_field :password_confirmation, placeholder: true, class: "form-control py-3" %>
+    </div>
+    <%= form.submit "Sign Up", class: "btn btn-primary rounded-4 p-3 w-100 fw-bold mb-3" %>
+    <div class="position-relative mb-4">
+      <hr>
+      <p class="position-absolute top-50 start-50 translate-middle text-muted bg-light p-1">Or</p>
+    </div>
+    <div class="d-flex align-items-center justify-content-center mb-3">
+      <span class="text-muted">Already have an account?</span>
+      <%= link_to "Login", new_session_path, class: "ms-1" %>
+    </div>
+  <% end %>
+</div>
