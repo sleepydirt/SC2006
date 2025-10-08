@@ -1,11 +1,62 @@
-<%= form_with model: @user do |form| %>
-  <%= form.text_field :username, placeholder: true %>
-  <br>
-  <%= form.email_field :email_address, placeholder: true %>
-  <br>
-  <%= form.password_field :password, placeholder: true %>
-  <br>
-  <%= form.password_field :password_confirmation, placeholder: true %>
-  <br>
-  <%= form.submit "Sign Up" %>
-<% end %>
+<div class="container-lg">
+    <div class="row justify-content-center align-items-center" style="height: 85vh; margin-top: 0;">
+        <div class="col-12 col-md-6 col-lg-5">
+            <div class="card border-0 bg-transparent">
+                <div class="card-body p-4 p-md-5">
+
+                    <%= form_with model: @user do |form| %>
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-bold fs-6">Username</label>
+                        <%= form.text_field :username, 
+                                  placeholder: true, 
+                                  class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                  id: "username" %>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email_address" class="form-label fw-bold fs-6">Email Address</label>
+                        <%= form.email_field :email_address, 
+                                    placeholder: true, 
+                                    class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                    id: "email_address" %>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold fs-6">Password</label>
+                        <%= form.password_field :password, 
+                                      placeholder: true, 
+                                      class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                      id: "password" %>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password_confirmation" class="form-label fw-bold fs-6">Confirm Password</label>
+                        <%= form.password_field :password_confirmation, 
+                                      placeholder: true, 
+                                      class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                      id: "password_confirmation" %>
+                        <% @user.errors.full_messages_for(:password_confirmation).each do |message| %>
+                        <p class="text-danger">
+                            <%= message %>
+                        </p>
+                        <% end %>
+                    </div>
+
+                    <%= form.submit "Sign Up", class: "btn btn-primary w-100 py-3 mb-4 fw-semibold fs-6 rounded-4" %>
+                    <% end %>
+
+                    <div class="position-relative mb-4">
+                        <hr class="text-muted">
+                        <span class="position-absolute top-50 start-50 translate-middle px-3 bg-light text-muted">Or</span>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-muted">Already have an account?</span>
+                        <%= link_to "Login", new_session_path, class: "text-primary text-decoration-none fw-semibold ms-1" %>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

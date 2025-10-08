@@ -1,2 +1,6 @@
-<h1>Search Courses</h1>
-<p>hello world</p>
+<div class="d-flex align-items-center justify-content-center" style="height: calc(100vh - 56px);">
+  <%= form_with url: courses_query_path, method: :get, class: "w-25" do |form| %>
+    <label for="name" class="form-label">Degree</label>
+    <%= form.search_field :degree, class: "form-control" %>
+  <% end %>
+</div>
