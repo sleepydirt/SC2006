@@ -13,7 +13,6 @@ class CreateCourses < ActiveRecord::Migration[8.0]
       t.string :gross_monthly_median
       t.string :gross_mthly_25_percentile
       t.string :gross_mthly_75_percentile
-      t.index :university_degree, [:university, :degree]
 
       t.timestamps
     end
