@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # modify endpoint paths so that it uses the /login endpoint for better readability
-  root "index#index"
+  root "search#index"
   resources :passwords, param: :token
   resources :users
   get "courses/query" => "courses#query", as: :courses_query
