@@ -3,7 +3,7 @@ courses/query
 <ul>
   <% @courses.each do |course| %>
     <li>
-      <%= course.university %>: <%= course.degree %>
+      <%= course.university %> (<%= course.year %>): <%= course.degree %>
     </li>
   <% end %>
 </ul>

@@ -5,6 +5,6 @@ class CoursesController < ApplicationController
   end
 
   def query
-    @courses = Course.where("degree LIKE ?", "%#{params[:degree]}%")
+    @courses = Course.search_degree(params[:degree])
   end
 end
