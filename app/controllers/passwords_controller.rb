@@ -20,7 +20,8 @@ class PasswordsController < ApplicationController
     if @user.update(params.permit(:password, :password_confirmation))
       redirect_to new_session_path, notice: "Password has been reset."
     else
-      redirect_to edit_password_path(params[:token]), alert: "Passwords do not match!"
+      error_message = @user.errors.full_messages.first
+      redirect_to edit_password_path(params[:token]), flash: { inline_alert: error_message }
     end
   end
 

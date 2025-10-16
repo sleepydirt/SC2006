@@ -6,25 +6,36 @@
                     <h1 class="py-3">Update your password</h1>
                     <%= form_with url: password_path(params[:token]), method: :put do |form| %>
                     <div class="mb-4">
+                        <label for="password" class="form-label fw-bold fs-6">New Password</label>
+                        <p class="text-muted mb-0">Please choose a strong password that:</p>
+                        <ul class="text-muted small">
+                            <li>Has at least 8 alphanumeric characters</li>
+                            <li>Contains at least 1 uppercase letter</li>
+                            <li>Contains at least 1 number</li>
+                            <li>Contains at least 1 special character</li>
+                        </ul>
                         <%= form.password_field :password, 
                                       required: true,
                                       placeholder: "Enter new password",
                                       autocomplete: "new-password",
                                       class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                      id: "password",
                                       maxlength: 72 %>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-2">
+                        <label for="password_confirmation" class="form-label fw-bold fs-6">Confirm New Password</label>
                         <%= form.password_field :password_confirmation, 
                                       required: true,
                                       autocomplete: "new-password",
                                       placeholder: "Repeat new password", 
                                       class: "form-control form-control-md py-3 rounded-4 bg-transparent",
+                                      id: "password_confirmation",
                                       maxlength: 72 %>
+                    </div>
 
-                        <% @user.errors.full_messages_for(:password_confirmation).each do |message| %>
-                        <p class="text-danger">
-                            <%= message %>
-                        </p>
+                    <div class="mb-4">
+                        <% if flash[:inline_alert] %>
+                        <span class="text-danger small"><%= flash[:inline_alert] %></span>
                         <% end %>
                     </div>
 
