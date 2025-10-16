@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title><%= content_for(:title) || "Career Compass" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,74 +24,156 @@
     <%= javascript_importmap_tags %>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  </head>
+    <script>
+        // hover delay for dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            // desktop only
+            if (window.innerWidth >= 992) {
+                const dropdown = document.querySelector('.nav-user.dropdown');
+                const dropdownMenu = dropdown?.querySelector('.dropdown-menu');
+                let hideTimeout;
 
-  <body class="bg-light">
+                if (dropdown && dropdownMenu) {
+                    dropdown.addEventListener('mouseenter', function() {
+                        clearTimeout(hideTimeout);
+                        dropdownMenu.classList.add('show');
+                    });
 
-    <%# Navbar %>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-bg">
-      <div class="container-fluid">
-        <%= link_to "CareerCompass", root_path, class: "navbar-brand fw-semibold" %>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-between align-items-lg-center" id="mainNav">
-          <ul class="navbar-nav position-absolute top-50 start-50 translate-middle gap-lg-3 d-none d-lg-flex">
-            <li class="nav-item">
-              <%= link_to "Trends", trends_path, class: "nav-link" %>
-            </li>
-            <li class="nav-item">
-              <%= button_to search_path, method: :get, form_class: "d-inline", class: "btn btn-primary d-flex align-items-center gap-2" do %>
-                <span>Search</span>
-                <i class="bi bi-search"></i>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Compare", compare_path, class: "nav-link" %>
-            </li>
-          </ul>
+                    dropdown.addEventListener('mouseleave', function() {
+                        hideTimeout = setTimeout(() => dropdownMenu.classList.remove('show'), 300);
+                    });
 
-          <%# Buttons for mobile view %>
-          <ul class="navbar-nav d-lg-none gap-2 mb-3">
-            <li class="nav-item">
-              <%= link_to "Trends", trends_path, class: "nav-link" %>
-            </li>
-            <li class="nav-item">
-              <%= button_to search_path, method: :get, form_class: "d-inline w-100", class: "btn btn-primary d-flex align-items-center gap-2" do %>
-                <span>Search</span>
-                <i class="bi bi-search"></i>
-              <% end %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Compare", compare_path, class: "nav-link" %>
-            </li>
-          </ul>
+                    dropdownMenu.addEventListener('mouseenter', function() {
+                        clearTimeout(hideTimeout);
+                    });
 
-          <div class="ms-lg-auto d-flex align-items-center gap-2">
-            <% if authenticated? %>
-              <%= link_to "Profile", users_path, class: "btn btn-outline-light" %>
-              <%= button_to "Log out", logout_path, method: :delete, form_class: "d-inline", class: "btn btn-outline-light" %>
-            <% else %>
-              <%= link_to new_session_path, class: "btn btn-light text-primary d-flex align-items-center gap-2" do %>
-                <i class="bi bi-box-arrow-in-right"></i>
-                <span>Login</span>
-              <% end %>
-            <% end %>
-          </div>
+                    dropdownMenu.addEventListener('mouseleave', function() {
+                        hideTimeout = setTimeout(() => dropdownMenu.classList.remove('show'), 300);
+                    });
+                }
+            }
+        });
+    </script>
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-bg p-3 shadow">
+        <div class="container-fluid">
+            <%= link_to "CareerCompass", root_path, class: "navbar-brand fw-semibold" %>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between align-items-lg-center" id="mainNav">
+                <ul class="navbar-nav position-absolute top-50 start-50 translate-middle gap-lg-3 d-none d-lg-flex">
+                    <li class="nav-item">
+                        <%= link_to "Trends", trends_path, class: "nav-link" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= button_to search_path, method: :get, form_class: "d-inline", class: "btn btn-primary d-flex align-items-center gap-2" do %>
+                        <span>Search</span>
+                        <i class="bi bi-search"></i>
+                        <% end %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "Compare", compare_path, class: "nav-link" %>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav d-lg-none gap-2 mb-3">
+                    <li class="nav-item">
+                        <%= link_to "Trends", trends_path, class: "nav-link" %>
+                    </li>
+                    <li class="nav-item">
+                        <%= button_to search_path, method: :get, form_class: "d-inline w-100", class: "btn btn-primary d-flex align-items-center gap-2" do %>
+                        <span>Search</span>
+                        <i class="bi bi-search"></i>
+                        <% end %>
+                    </li>
+                    <li class="nav-item">
+                        <%= link_to "Compare", compare_path, class: "nav-link" %>
+                    </li>
+                </ul>
+
+                <div class="ms-lg-auto d-flex align-items-center gap-2">
+                    <% if authenticated? %>
+                    <div class="nav-user dropdown">
+                        <a href="#" class="dropdown-toggle no-caret text-decoration-none d-flex align-items-center text-dark" id="userMenu" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <!-- temporary white circle as profile img -->
+                            <div class="rounded-circle bg-dark flex-shrink-0" style="width: 32px; height: 32px;"></div>
+                            <div class="ms-2">
+                                <div class="fw-bold small"><%= Current.user.username %></div>
+                                <div style="font-size: 0.75rem; opacity: 0.7;">NTU Computer Science, Year 3</div>
+                            </div>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow user-menu" aria-labelledby="userMenu">
+                            <li>
+                                <%= link_to users_path, class: "dropdown-item d-flex align-items-center" do %>
+                                <i class="bi bi-person menu-ico"></i><span>Profile</span>
+                                <% end %>
+                            </li>
+                            <li>
+                                <%= link_to "#", class: "dropdown-item d-flex align-items-center" do %>
+                                <i class="bi bi-bookmark menu-ico"></i><span>Bookmarks</span>
+                                <% end %>
+                            </li>
+                            <li>
+                                <%= link_to "#", class: "dropdown-item d-flex align-items-center" do %>
+                                <i class="bi bi-journal-text menu-ico"></i><span>User Guide</span>
+                                <% end %>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <%= button_to logout_path, method: :delete, form_class: "d-inline w-100", class: "dropdown-item d-flex align-items-center text-danger border-0 bg-transparent text-start" do %>
+                                <i class="bi bi-box-arrow-right menu-ico"></i><span>Logout</span>
+                                <% end %>
+                            </li>
+                        </ul>
+                    </div>
+                    <% else %>
+                    <%= link_to new_session_path, class: "btn btn-outline-primary d-flex align-items-center gap-2" do %>
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Login</span>
+                    <% end %>
+                    <% end %>
+                </div>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <%# Flash auth_required warning for unauthorised actions %>
+    <%# add popups for auth_required, notice and alert messages, right below navbar %>
     <% if flash[:auth_required] %>
-      <div class="container mt-3">
+    <div class="container mt-3">
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <%= flash[:auth_required] %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <%= flash[:auth_required] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      </div>
+    </div>
+    <% end %>
+
+    <% if flash[:notice] %>
+    <div class="container mt-3">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= flash[:notice] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    <% end %>
+
+    <% if flash[:alert] %>
+    <div class="container mt-3">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= flash[:alert] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
     <% end %>
 
     <%= yield %>
-  </body>
+</body>
+
 </html>
