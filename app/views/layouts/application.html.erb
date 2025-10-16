@@ -145,11 +145,29 @@
         </div>
     </nav>
 
-    <%# Flash auth_required warning for unauthorised actions %>
+    <%# add popups for auth_required, notice and alert messages, right below navbar %>
     <% if flash[:auth_required] %>
     <div class="container mt-3">
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <%= flash[:auth_required] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    <% end %>
+
+    <% if flash[:notice] %>
+    <div class="container mt-3">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= flash[:notice] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    <% end %>
+
+    <% if flash[:alert] %>
+    <div class="container mt-3">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= flash[:alert] %>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
