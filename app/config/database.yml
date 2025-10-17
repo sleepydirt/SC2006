@@ -5,15 +5,17 @@
 #   gem "sqlite3"
 #
 default: &default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+postgres: &postgres
   adapter: postgresql
   encoding: unicode
   host: db
   username: <%= ENV["DATABASE_USERNAME"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   database: <%= ENV["DATABASE_NAME"] %>
-  # adapter: sqlite3
-  # pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # timeout: 5000
 
 development:
   <<: *default
@@ -31,20 +33,24 @@ test:
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
-    <<: *default
+    <<: *postgres
+    # <<: *default
     # database: storage/production.sqlite3
   cache:
-    <<: *default
+    <<: *postgres
     database: cache
+    # <<: *default
     # database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
+    <<: *postgres
     database: queue
+    # <<: *default
     # database: storage/production_queue.sqlite3
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
+    <<: *postgres
     database: cable
+    # <<: *default
     # database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate
