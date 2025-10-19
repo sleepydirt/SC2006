@@ -6,7 +6,7 @@ services:
     depends_on:
       - db
     environment:
-      RAILS_MASTER_KEY: 4054e22bee602af3d9ee514bc1553069
+      RAILS_MASTER_KEY: 4054e22bee602af3d9ee514bc1553069  # This is a default dummy key so that credentials do not have do be regenerated for development
       DATABASE_HOST: db
       DATABASE_USERNAME: postgres
       DATABASE_PASSWORD: password
