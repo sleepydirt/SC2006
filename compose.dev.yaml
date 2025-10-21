@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: app
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - db
+    environment:
+      RAILS_MASTER_KEY: 4054e22bee602af3d9ee514bc1553069  # This is a default dummy key so that credentials do not have do be regenerated for development
+      DATABASE_HOST: db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/rails
+
+  db:
+    image: postgres:18.0
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dev
+    expose:
+      - "5432"
+    volumes:
+      - db:/var/lib/postgresql
+      - ./db:/docker-entrypoint-initdb.d
+
+volumes:
+  db:
