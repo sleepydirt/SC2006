@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # modify endpoint paths so that it uses the /login endpoint for better readability
-  root "index#index"
+  root "search#index"
   resources :passwords, param: :token
   resources :users
   get "courses/query" => "courses#query", as: :courses_query
@@ -26,4 +26,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # configure endpoint for Letter Opener
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end

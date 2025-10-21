@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
       start_new_session_for user
       redirect_to after_authentication_url
     else
-      redirect_to new_session_path, alert: "Wrong email or password!"
+      redirect_to new_session_path, flash: { inline_alert: "Incorrect email or password!" }
     end
   end
 

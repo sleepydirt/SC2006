@@ -8,8 +8,8 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
         user: {
           username: "test",
           email_address: "test@example.com",
-          password: "password123",
-          password_confirmation: "password123"
+          password: "Password123!",
+          password_confirmation: "Password123!"
         }
       }
     end
@@ -23,7 +23,7 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     # login with the test account
     post session_path, params: {
       email_address: "test@example.com",
-      password: "password123"
+      password: "Password123!"
     }
 
     assert_redirected_to root_path
@@ -43,12 +43,12 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
   test "login with invalid credentials shows error" do
     post session_path, params: {
       email_address: "blabla@example.com",
-      password: "password123"
+      password: "Password123!"
     }
 
     assert_redirected_to new_session_path
     follow_redirect!
-    assert_equal "Wrong email or password!", flash[:alert]
+    assert_equal "Incorrect email or password!", flash[:inline_alert]
   end
 
   test "unauthenticated user can access search but not trends or compare" do

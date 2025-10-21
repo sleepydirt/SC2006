@@ -79,3 +79,14 @@ Alternatively,
 ```bash
 $ docker compose down -v
 ```
+
+Access the app at http://localhost:3000
+
+## Testing
+
+To run all unit tests:
+> [!CAUTION]  
+> You need to run the command INSIDE the docker container during development, running `rails test` outside the container will fail.
+```bash
+$ docker exec sc2006-app-1 bin/rails test
+```

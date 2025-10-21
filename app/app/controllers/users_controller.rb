@@ -14,7 +14,9 @@ class UsersController < ApplicationController
       start_new_session_for @user
       redirect_to root_path
     else
-      render :new, status: :unprocessable_entity
+      # display error message if fail, repopulate the parameters for username/email but clear password fields
+      error_message = @user.errors.full_messages.first
+      redirect_to new_user_path(user: user_params.except(:password, :password_confirmation)), flash: { inline_alert: error_message }
     end
   end
 
