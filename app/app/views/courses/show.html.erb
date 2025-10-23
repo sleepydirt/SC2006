@@ -1,0 +1,30 @@
+<div class="container-fluid">
+  <h1>
+    <%= @course.degree %>
+  </h1>
+  <h4>
+    <%= @course.university %>
+  </h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <% @course_stats.attribute_names[1, 9].each do |attribute| %>
+          <th>
+            <%= attribute %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @course_stats.each do |course_stat| %>
+        <tr>
+          <% course_stat.attributes.values[1, 9].each do |attribute| %>
+            <td>
+              <%= attribute %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

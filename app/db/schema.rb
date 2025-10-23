@@ -10,16 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_25_083037) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_22_191301) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
 
-  create_table "courses", force: :cascade do |t|
+  create_table "course_stats", force: :cascade do |t|
     t.integer "year"
-    t.string "university"
-    t.string "school"
-    t.string "degree"
     t.string "employment_rate_overall"
     t.string "employment_rate_ft_perm"
     t.string "basic_monthly_mean"
@@ -28,8 +26,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_25_083037) do
     t.string "gross_monthly_median"
     t.string "gross_mthly_25_percentile"
     t.string "gross_mthly_75_percentile"
+    t.bigint "course_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_course_stats_on_course_id"
+  end
+
+  create_table "courses", force: :cascade do |t|
+    t.string "university"
+    t.string "school"
+    t.string "degree"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["university", "school", "degree"], name: "index_courses_on_university_and_school_and_degree", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -50,5 +59,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_25_083037) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "course_stats", "courses"
   add_foreign_key "sessions", "users"
 end

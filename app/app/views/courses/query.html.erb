@@ -1,9 +1,33 @@
-courses/query
-
-<ul>
-  <% @courses.each do |course| %>
-    <li>
-      <%= course.university %> (<%= course.year %>): <%= course.degree %>
-    </li>
-  <% end %>
-</ul>
+<div class="d-flex flex-row align-items-center justify-content-center" style="height: calc(100vh - 72px);">
+  <div class="col-3 h-75 px-5">
+    <%= form_with url: courses_query_path, method: :get  do |form| %>
+      <div class="mb-3">
+        <%= form.label :degree, class: "form-label fw-bold" %>
+        <%= form.search_field :degree, class: "form-control", onchange: "this.form.requestSubmit()", value: params[:degree] %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :university, class: "form-label fw-bold" %>
+        <% @universities.each do |university| %>
+          <div class="form-check">
+            <%= form.check_box "university[#{university}]", checked: params[:university][university] == "1", class: "form-check-input" %>
+            <%= form.label university, class: "form-check-label" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-6 h-75 px-5" style="overflow-y: scroll;">
+    <% @courses.each do |course| %>
+      <a href="<%= course_path(course.id) %>" class="text-reset text-decoration-none">
+        <div class="d-flex flex-column rounded bg-secondary-subtle p-3 m-1">
+          <div class="fw-bold">
+            <%= course.degree %>
+          </div>
+          <div>
+            <%= course.university %>
+          </div>
+        </div>
+      </a>
+    <% end %>
+  </div>
+</div>

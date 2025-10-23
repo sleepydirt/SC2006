@@ -11,9 +11,22 @@
 require "csv"
 
 data = File.read(Rails.root.join("db", "GraduateEmploymentSurveyNTUNUSSITSMUSUSSSUTD.csv"))
+# data = File.read(Rails.root.join("db", "cleaned_data.csv"))
 data = CSV.parse(data, headers: :true)
 
 data.each do |row|
-  c = Course.new(row)
-  c.save
+  c = Course.create(row.to_h.slice("university", "school", "degree")) rescue nil
+end
+
+data.each do |row|
+  row = row.to_h
+
+  course = Course.find_by(row.slice("university", "school", "degree"))
+
+  row.delete("university")
+  row.delete("school")
+  row.delete("degree")
+  row["course"] = course
+
+  CourseStat.create(row)
 end

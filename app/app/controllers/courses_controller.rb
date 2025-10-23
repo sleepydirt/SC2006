@@ -4,7 +4,31 @@ class CoursesController < ApplicationController
     @courses = Course.all
   end
 
+  def show
+    @course = Course.find(params[:id])
+    @course_stats = CourseStat.where(course_id: @course.id).order(year: :desc)
+  end
+
   def query
-    @courses = Course.search_degree(params[:degree])
+    puts "Params:"
+    puts params
+
+    @universities = [
+      "National University of Singapore",
+      "Nanyang Technological University",
+      "Singapore Management University",
+      "Singapore Institute of Technology",
+      "Singapore University of Social Sciences",
+      "Singapore University of Technology and Design"
+    ]
+
+    @courses = Course
+      .select("*, ts_rank_cd(to_tsvector(degree), to_tsquery('english', '#{params[:degree]}')) AS rank")
+      .where("to_tsvector('english', degree) @@ to_tsquery('english', ?)", params[:degree])
+      .order("rank")
+
+    if params[:university]
+      @courses = @courses.where("university IN (?)", params[:university].select { |k, v| v == "1" }.keys)
+    end
   end
 end
