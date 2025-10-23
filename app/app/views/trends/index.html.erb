@@ -5,79 +5,56 @@
   <div class="row">
     <!-- Sidebar Filters -->
     <div class="col-lg-3 mb-4">
-        <div class="sidebar">
-            <h5 class="section-title">Filters</h5>
+      <div class="sidebar">
+        <h5 class="section-title">Filters</h5>
 
         <!-- Field to visualise -->
         <div class="mb-4">
-            <label class="form-label fw-bold mb-2">Select field to visualise</label>
-                <% ['course_duration','employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median'].each_with_index do |field, i| %>
-                    <div class="form-check">
-                    <input class="form-check-input" type="radio" name="field" id="field<%= i+1 %>" value="<%= field %>" <%= 'checked' if i==0 %>>
-                    <label class="form-check-label" for="field<%= i+1 %>"><%= field.humanize %></label>
-                    </div>
+          <label class="form-label fw-bold mb-2">Select field to visualise</label>
+          <% ['employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median','course_duration'].each_with_index do |field, i| %>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="field" id="field<%= i+1 %>" value="<%= field %>" <%= 'checked' if i==0 %>>
+              <label class="form-check-label" for="field<%= i+1 %>"><%= field.humanize %></label>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- University Filter -->
+        <div class="mb-3">
+          <label class="form-label fw-bold mb-1">Select University</label>
+          <select class="form-select" id="universitySelect">
+            <option value="">Select a university</option>
+            <% @programs.map { |p| p[:university] }.uniq.sort.each do |u| %>
+              <option value="<%= u %>"><%= u %></option>
             <% end %>
+          </select>
         </div>
 
-        <!-- First University Filter -->
+        <!-- School Filter -->
         <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select University 1</label>
-        <select class="form-select" id="universitySelect">
-            <option value="all" selected>All</option>
-            <% @programs.map { |p| p[:university] }.uniq.each do |u| %>
-            <option value="<%= u %>"><%= u %></option>
-            <% end %>
-        </select>
+          <label class="form-label fw-bold mb-1">Select School</label>
+          <select class="form-select" id="schoolSelect" disabled>
+            <option value="">Select a school</option>
+          </select>
         </div>
 
-        <!-- First School Filter -->
+        <!-- Degree Filter (Multiple Selection) -->
         <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select School (Uni 1)</label>
-        <select class="form-select" id="schoolSelect">
-            <option value="all" selected>All</option>
-        </select>
+          <label class="form-label fw-bold mb-1">Select Degrees (up to 3 for comparison)</label>
+          <select class="form-select" id="degreeSelect" multiple size="8" disabled>
+            <option value="">Select degrees...</option>
+          </select>
+          <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
         </div>
 
-        <!-- First Degree Filter -->
-        <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select Degree (Uni 1)</label>
-        <select class="form-select" id="degreeSelect" multiple size="5"></select>
-        </div>
+        <!-- Apply Filters -->
+        <button class="btn btn-primary w-100" id="applyFilters">Apply Filters</button>
+      </div>
+    </div>
 
-        <hr class="my-4">
-
-        <!-- Second University Filter for comparison -->
-        <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select University 2</label>
-        <select class="form-select" id="universityCompareSelect">
-            <option value="none" selected>None</option>
-            <% @programs.map { |p| p[:university] }.uniq.each do |u| %>
-            <option value="<%= u %>"><%= u %></option>
-            <% end %>
-        </select>
-        </div>
-
-        <!-- Second School Filter -->
-        <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select School (Uni 2)</label>
-        <select class="form-select" id="schoolCompareSelect">
-            <option value="all" selected>All</option>
-        </select>
-        </div>
-
-        <!-- Second Degree Filter -->
-        <div class="mb-3">
-        <label class="form-label fw-bold mb-1">Select Degree (Uni 2)</label>
-        <select class="form-select" id="degreeCompareSelect" multiple size="5"></select>
-        </div>
-
-    <!-- Apply Filters -->
-    <button class="btn btn-primary w-100" id="applyFilters">Apply Filters</button>
-  </div>
-</div>
     <!-- Chart Area -->
     <div class="col-lg-9">
-      <div class="chart-container" style="height: 400px;">
+      <div class="chart-container" style="height: 500px;">
         <canvas id="trendChart"></canvas>
       </div>
     </div>
@@ -90,15 +67,34 @@
 <script>
 let chart;
 const programs = <%= raw @programs.to_json %>;
+const colors = [
+  { bg: 'rgba(100,149,237,0.6)', border: '#6495ed' },
+  { bg: 'rgba(255,107,107,0.6)', border: '#ff6b6b' },
+  { bg: 'rgba(72,201,176,0.6)', border: '#48c9b0' },
+];
 
 function updateSchoolOptions() {
-  const selectedUniversity = document.getElementById('universitySelect').value;
+  const university = document.getElementById('universitySelect').value;
   const schoolSelect = document.getElementById('schoolSelect');
+  const degreeSelect = document.getElementById('degreeSelect');
+
+  schoolSelect.innerHTML = '<option value="">Select a school</option>';
+  degreeSelect.innerHTML = '<option value="">Select degrees...</option>';
+  degreeSelect.disabled = true;
+
+  if (!university) {
+    schoolSelect.disabled = true;
+    return;
+  }
+
+  schoolSelect.disabled = false;
+
   const schools = programs
-    .filter(p => selectedUniversity === 'all' || p.university === selectedUniversity)
+    .filter(p => p.university === university)
     .map(p => p.school)
-    .filter((v, i, a) => a.indexOf(v) === i);
-  schoolSelect.innerHTML = '<option value="all" selected>All</option>';
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort();
+
   schools.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s;
@@ -107,174 +103,120 @@ function updateSchoolOptions() {
   });
 }
 
-function updateSchoolCompareOptions() {
-  const selectedUniversity = document.getElementById('universityCompareSelect').value;
-  const schoolCompareSelect = document.getElementById('schoolCompareSelect');
-  
-  if (selectedUniversity === 'none') {
-    schoolCompareSelect.innerHTML = '<option value="all" selected>All</option>';
-    schoolCompareSelect.disabled = true;
+function updateDegreeOptions() {
+  const university = document.getElementById('universitySelect').value;
+  const school = document.getElementById('schoolSelect').value;
+  const degreeSelect = document.getElementById('degreeSelect');
+
+  degreeSelect.innerHTML = '<option value="">Select degrees...</option>';
+  if (!university || !school) {
+    degreeSelect.disabled = true;
     return;
   }
-  
-  schoolCompareSelect.disabled = false;
-  const schools = programs
-    .filter(p => p.university === selectedUniversity)
-    .map(p => p.school)
-    .filter((v, i, a) => a.indexOf(v) === i);
-  schoolCompareSelect.innerHTML = '<option value="all" selected>All</option>';
-  schools.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    schoolCompareSelect.appendChild(opt);
-  });
-}
 
-function updateDegreeOptions() {
-  const selectedUniversity = document.getElementById('universitySelect').value;
-  const selectedSchool = document.getElementById('schoolSelect').value;
-  const degreeSelect = document.getElementById('degreeSelect');
+  degreeSelect.disabled = false;
   const degrees = programs
-    .filter(p => 
-      (selectedUniversity === 'all' || p.university === selectedUniversity) &&
-      (selectedSchool === 'all' || p.school === selectedSchool)
-    )
+    .filter(p => p.university === university && p.school === school)
     .map(p => p.degree)
-    .filter((v, i, a) => a.indexOf(v) === i);
-  degreeSelect.innerHTML = '';
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort();
+
   degrees.forEach(d => {
     const opt = document.createElement('option');
     opt.value = d;
     opt.textContent = d;
     degreeSelect.appendChild(opt);
   });
-}
-
-function updateDegreeCompareOptions() {
-  const selectedUniversity = document.getElementById('universityCompareSelect').value;
-  const selectedSchool = document.getElementById('schoolCompareSelect').value;
-  const degreeCompareSelect = document.getElementById('degreeCompareSelect');
-  
-  if (selectedUniversity === 'none') {
-    degreeCompareSelect.innerHTML = '';
-    degreeCompareSelect.disabled = true;
-    return;
-  }
-  
-  degreeCompareSelect.disabled = false;
-  const degrees = programs
-    .filter(p => 
-      p.university === selectedUniversity &&
-      (selectedSchool === 'all' || p.school === selectedSchool)
-    )
-    .map(p => p.degree)
-    .filter((v, i, a) => a.indexOf(v) === i);
-  degreeCompareSelect.innerHTML = '';
-  degrees.forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d;
-    opt.textContent = d;
-    degreeCompareSelect.appendChild(opt);
-  });
+  degreeSelect.selectedIndex = -1; // Clear previous selection
 }
 
 function generateChartData(field) {
-  const uni1 = document.getElementById('universitySelect').value;
-  const school1 = document.getElementById('schoolSelect').value;
-  const degrees1 = Array.from(document.getElementById('degreeSelect').selectedOptions).map(o => o.value);
-  
-  const uni2 = document.getElementById('universityCompareSelect').value;
-  const school2 = document.getElementById('schoolCompareSelect').value;
-  const degrees2 = Array.from(document.getElementById('degreeCompareSelect').selectedOptions).map(o => o.value);
+  const university = document.getElementById('universitySelect').value;
+  const school = document.getElementById('schoolSelect').value;
+  const selectedDegrees = Array.from(document.getElementById('degreeSelect').selectedOptions)
+    .map(o => o.value)
+    .filter(v => v)
+    .slice(0, 3);
 
-  const filterFor = (uni, school, degrees) => programs.filter(p =>
-    (uni === 'all' || p.university === uni) &&
-    (school === 'all' || p.school === school) &&
-    (degrees.length === 0 || degrees.includes(p.degree))
-  );
+  if (!university || !school || selectedDegrees.length === 0) return { labels: [], datasets: [] };
 
-  const data1 = filterFor(uni1, school1, degrees1);
-  const data2 = uni2 !== 'none' ? filterFor(uni2, school2, degrees2) : [];
+  const years = Array.from({length: 11}, (_, i) => (2013 + i).toString()); // 2013-2023
 
-  const allDegrees = [...new Set([...data1.map(p => p.degree), ...data2.map(p => p.degree)])];
+  const datasets = selectedDegrees.map((degree, idx) => {
+    const degreeData = programs.filter(p =>
+      p.university === university && p.school === school && p.degree === degree
+    );
 
-  const getValues = (data) => allDegrees.map(d => {
-    const p = data.find(p => p.degree === d);
-    return p ? Number(p[field] || 0) : 0;
+    const dataByYear = {};
+    degreeData.forEach(p => { dataByYear[p.year] = parseFloat(p[field]) || 0; });
+    const data = years.map(y => dataByYear[y] ?? null);
+
+    return {
+      label: degree,
+      data,
+      backgroundColor: colors[idx % colors.length].bg,
+      borderColor: colors[idx % colors.length].border,
+      borderWidth: 2,
+      fill: false,
+      tension: 0.1,
+      spanGaps: true
+    };
   });
 
-  return {
-    labels: allDegrees,
-    dataset1: getValues(data1),
-    dataset2: getValues(data2),
-    label1Name: uni1 === 'all' ? 'All Universities' : uni1,
-    label2Name: uni2
-  };
+  return { labels: years, datasets };
 }
 
-function createChart(labels, data1, data2 = [], label1Name = '', label2Name = '') {
+function createChart(chartData) {
   const ctx = document.getElementById('trendChart').getContext('2d');
-  if(chart) chart.destroy();
+  if (chart) chart.destroy();
 
-  const datasets = [
-    { label: label1Name, data: data1, backgroundColor: 'rgba(100,149,237,0.6)', borderColor: '#6495ed', borderWidth: 1 }
-  ];
-
-  if(data2.length > 0) {
-    datasets.push({ label: label2Name, data: data2, backgroundColor: 'rgba(255,107,107,0.6)', borderColor: '#ff6b6b', borderWidth: 1 });
+  if (!chartData.labels.length) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillStyle = '#666';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Please select university, school, and degree(s) to view trends',
+      ctx.canvas.width / 2, ctx.canvas.height / 2);
+    return;
   }
 
   chart = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets },
+    type: 'line',
+    data: chartData,
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      scales: { y: { beginAtZero: true } }
+      plugins: {
+        legend: { display: true, position: 'top' },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Year' } },
+        y: { beginAtZero: true, title: { display: true, text: 'Value' } }
+      },
+      interaction: { mode: 'nearest', axis: 'x', intersect: false }
     }
   });
 }
 
 function updateChart() {
-  const selectedField = document.querySelector('input[name="field"]:checked').value;
-  const data = generateChartData(selectedField);
-  createChart(data.labels, data.dataset1, data.dataset2, data.label1Name, data.label2Name);
+  const field = document.querySelector('input[name="field"]:checked').value;
+  const chartData = generateChartData(field);
+  createChart(chartData);
 }
 
 function initChart() {
-  updateSchoolOptions();
-  updateSchoolCompareOptions();
-  updateDegreeOptions();
-  updateDegreeCompareOptions();
-  updateChart();
+  const ctx = document.getElementById('trendChart').getContext('2d');
 
   document.getElementById('universitySelect').addEventListener('change', () => {
     updateSchoolOptions();
     updateDegreeOptions();
-    updateChart();
   });
-
-  document.getElementById('schoolSelect').addEventListener('change', () => {
-    updateDegreeOptions();
-    updateChart();
-  });
-
-  document.getElementById('universityCompareSelect').addEventListener('change', () => {
-    updateSchoolCompareOptions();
-    updateDegreeCompareOptions();
-    updateChart();
-  });
-
-  document.getElementById('schoolCompareSelect').addEventListener('change', () => {
-    updateDegreeCompareOptions();
-    updateChart();
-  });
-
-  document.getElementById('degreeSelect').addEventListener('change', updateChart);
-  document.getElementById('degreeCompareSelect').addEventListener('change', updateChart);
-  document.querySelectorAll('input[name="field"]').forEach(radio => radio.addEventListener('change', updateChart));
+  document.getElementById('schoolSelect').addEventListener('change', updateDegreeOptions);
   document.getElementById('applyFilters').addEventListener('click', updateChart);
+  document.querySelectorAll('input[name="field"]').forEach(r => r.addEventListener('change', () => {
+    if (chart && chart.data.datasets.length > 0) updateChart();
+  }));
 }
 
 document.addEventListener('turbo:load', initChart);
