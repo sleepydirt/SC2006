@@ -21,9 +21,7 @@ class TrendsController < ApplicationController
         course_duration: row["course_duration"].to_f
       }
     end
-
     # Unique list of universities for dropdown
     @universities = @programs.map { |p| p[:university] }.uniq.sort
-
   end
 end
