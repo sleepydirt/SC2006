@@ -1,2 +1,282 @@
 <h1>Trends</h1>
 <p>Visualise the trends of any course here</p>
+
+<div class="content-wrapper">
+  <div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3 mb-4">
+        <div class="sidebar">
+            <h5 class="section-title">Filters</h5>
+
+        <!-- Field to visualise -->
+        <div class="mb-4">
+            <label class="form-label fw-bold mb-2">Select field to visualise</label>
+                <% ['course_duration','employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median'].each_with_index do |field, i| %>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="field" id="field<%= i+1 %>" value="<%= field %>" <%= 'checked' if i==0 %>>
+                    <label class="form-check-label" for="field<%= i+1 %>"><%= field.humanize %></label>
+                    </div>
+            <% end %>
+        </div>
+
+        <!-- First University Filter -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select University 1</label>
+        <select class="form-select" id="universitySelect">
+            <option value="all" selected>All</option>
+            <% @programs.map { |p| p[:university] }.uniq.each do |u| %>
+            <option value="<%= u %>"><%= u %></option>
+            <% end %>
+        </select>
+        </div>
+
+        <!-- First School Filter -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select School (Uni 1)</label>
+        <select class="form-select" id="schoolSelect">
+            <option value="all" selected>All</option>
+        </select>
+        </div>
+
+        <!-- First Degree Filter -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select Degree (Uni 1)</label>
+        <select class="form-select" id="degreeSelect" multiple size="5"></select>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Second University Filter for comparison -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select University 2</label>
+        <select class="form-select" id="universityCompareSelect">
+            <option value="none" selected>None</option>
+            <% @programs.map { |p| p[:university] }.uniq.each do |u| %>
+            <option value="<%= u %>"><%= u %></option>
+            <% end %>
+        </select>
+        </div>
+
+        <!-- Second School Filter -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select School (Uni 2)</label>
+        <select class="form-select" id="schoolCompareSelect">
+            <option value="all" selected>All</option>
+        </select>
+        </div>
+
+        <!-- Second Degree Filter -->
+        <div class="mb-3">
+        <label class="form-label fw-bold mb-1">Select Degree (Uni 2)</label>
+        <select class="form-select" id="degreeCompareSelect" multiple size="5"></select>
+        </div>
+
+    <!-- Apply Filters -->
+    <button class="btn btn-primary w-100" id="applyFilters">Apply Filters</button>
+  </div>
+</div>
+    <!-- Chart Area -->
+    <div class="col-lg-9">
+      <div class="chart-container" style="height: 400px;">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let chart;
+const programs = <%= raw @programs.to_json %>;
+
+function updateSchoolOptions() {
+  const selectedUniversity = document.getElementById('universitySelect').value;
+  const schoolSelect = document.getElementById('schoolSelect');
+  const schools = programs
+    .filter(p => selectedUniversity === 'all' || p.university === selectedUniversity)
+    .map(p => p.school)
+    .filter((v, i, a) => a.indexOf(v) === i);
+  schoolSelect.innerHTML = '<option value="all" selected>All</option>';
+  schools.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    schoolSelect.appendChild(opt);
+  });
+}
+
+function updateSchoolCompareOptions() {
+  const selectedUniversity = document.getElementById('universityCompareSelect').value;
+  const schoolCompareSelect = document.getElementById('schoolCompareSelect');
+  
+  if (selectedUniversity === 'none') {
+    schoolCompareSelect.innerHTML = '<option value="all" selected>All</option>';
+    schoolCompareSelect.disabled = true;
+    return;
+  }
+  
+  schoolCompareSelect.disabled = false;
+  const schools = programs
+    .filter(p => p.university === selectedUniversity)
+    .map(p => p.school)
+    .filter((v, i, a) => a.indexOf(v) === i);
+  schoolCompareSelect.innerHTML = '<option value="all" selected>All</option>';
+  schools.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    schoolCompareSelect.appendChild(opt);
+  });
+}
+
+function updateDegreeOptions() {
+  const selectedUniversity = document.getElementById('universitySelect').value;
+  const selectedSchool = document.getElementById('schoolSelect').value;
+  const degreeSelect = document.getElementById('degreeSelect');
+  const degrees = programs
+    .filter(p => 
+      (selectedUniversity === 'all' || p.university === selectedUniversity) &&
+      (selectedSchool === 'all' || p.school === selectedSchool)
+    )
+    .map(p => p.degree)
+    .filter((v, i, a) => a.indexOf(v) === i);
+  degreeSelect.innerHTML = '';
+  degrees.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    degreeSelect.appendChild(opt);
+  });
+}
+
+function updateDegreeCompareOptions() {
+  const selectedUniversity = document.getElementById('universityCompareSelect').value;
+  const selectedSchool = document.getElementById('schoolCompareSelect').value;
+  const degreeCompareSelect = document.getElementById('degreeCompareSelect');
+  
+  if (selectedUniversity === 'none') {
+    degreeCompareSelect.innerHTML = '';
+    degreeCompareSelect.disabled = true;
+    return;
+  }
+  
+  degreeCompareSelect.disabled = false;
+  const degrees = programs
+    .filter(p => 
+      p.university === selectedUniversity &&
+      (selectedSchool === 'all' || p.school === selectedSchool)
+    )
+    .map(p => p.degree)
+    .filter((v, i, a) => a.indexOf(v) === i);
+  degreeCompareSelect.innerHTML = '';
+  degrees.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    degreeCompareSelect.appendChild(opt);
+  });
+}
+
+function generateChartData(field) {
+  const uni1 = document.getElementById('universitySelect').value;
+  const school1 = document.getElementById('schoolSelect').value;
+  const degrees1 = Array.from(document.getElementById('degreeSelect').selectedOptions).map(o => o.value);
+  
+  const uni2 = document.getElementById('universityCompareSelect').value;
+  const school2 = document.getElementById('schoolCompareSelect').value;
+  const degrees2 = Array.from(document.getElementById('degreeCompareSelect').selectedOptions).map(o => o.value);
+
+  const filterFor = (uni, school, degrees) => programs.filter(p =>
+    (uni === 'all' || p.university === uni) &&
+    (school === 'all' || p.school === school) &&
+    (degrees.length === 0 || degrees.includes(p.degree))
+  );
+
+  const data1 = filterFor(uni1, school1, degrees1);
+  const data2 = uni2 !== 'none' ? filterFor(uni2, school2, degrees2) : [];
+
+  const allDegrees = [...new Set([...data1.map(p => p.degree), ...data2.map(p => p.degree)])];
+
+  const getValues = (data) => allDegrees.map(d => {
+    const p = data.find(p => p.degree === d);
+    return p ? Number(p[field] || 0) : 0;
+  });
+
+  return {
+    labels: allDegrees,
+    dataset1: getValues(data1),
+    dataset2: getValues(data2),
+    label1Name: uni1 === 'all' ? 'All Universities' : uni1,
+    label2Name: uni2
+  };
+}
+
+function createChart(labels, data1, data2 = [], label1Name = '', label2Name = '') {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if(chart) chart.destroy();
+
+  const datasets = [
+    { label: label1Name, data: data1, backgroundColor: 'rgba(100,149,237,0.6)', borderColor: '#6495ed', borderWidth: 1 }
+  ];
+
+  if(data2.length > 0) {
+    datasets.push({ label: label2Name, data: data2, backgroundColor: 'rgba(255,107,107,0.6)', borderColor: '#ff6b6b', borderWidth: 1 });
+  }
+
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+function updateChart() {
+  const selectedField = document.querySelector('input[name="field"]:checked').value;
+  const data = generateChartData(selectedField);
+  createChart(data.labels, data.dataset1, data.dataset2, data.label1Name, data.label2Name);
+}
+
+function initChart() {
+  updateSchoolOptions();
+  updateSchoolCompareOptions();
+  updateDegreeOptions();
+  updateDegreeCompareOptions();
+  updateChart();
+
+  document.getElementById('universitySelect').addEventListener('change', () => {
+    updateSchoolOptions();
+    updateDegreeOptions();
+    updateChart();
+  });
+
+  document.getElementById('schoolSelect').addEventListener('change', () => {
+    updateDegreeOptions();
+    updateChart();
+  });
+
+  document.getElementById('universityCompareSelect').addEventListener('change', () => {
+    updateSchoolCompareOptions();
+    updateDegreeCompareOptions();
+    updateChart();
+  });
+
+  document.getElementById('schoolCompareSelect').addEventListener('change', () => {
+    updateDegreeCompareOptions();
+    updateChart();
+  });
+
+  document.getElementById('degreeSelect').addEventListener('change', updateChart);
+  document.getElementById('degreeCompareSelect').addEventListener('change', updateChart);
+  document.querySelectorAll('input[name="field"]').forEach(radio => radio.addEventListener('change', updateChart));
+  document.getElementById('applyFilters').addEventListener('click', updateChart);
+}
+
+document.addEventListener('turbo:load', initChart);
+document.addEventListener('DOMContentLoaded', initChart);
+</script>
