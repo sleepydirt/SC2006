@@ -1,0 +1,88 @@
+<!-- app/views/user_guides/show.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerCompass User Guide</title>
+  <%= stylesheet_link_tag 'user_guide', media: 'all' %> <!-- Link to CSS for styling -->
+</head>
+<body>
+  <header>
+    <!-- Removed navigation links as requested -->
+  </header>
+
+  <section class="user-guide">
+    <h1>CareerCompass User Guide</h1>
+    
+    <div class="intro">
+      <p>This user guide will walk you through how to use the CareerCompass platform. Here, you can search for courses, compare them, and visualize key data like employment rates, salaries, and more!</p>
+    </div>
+    
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#creating-account">Creating an Account</a></li>
+      <li><a href="#searching-courses">Searching for Courses</a></li>
+      <li><a href="#bookmarking-courses">Bookmarking Courses</a></li>
+      <li><a href="#comparing-courses">Comparing Courses</a></li>
+      <li><a href="#visualizing-trends">Visualizing Trends</a></li>
+    </ul>
+
+    <div class="section" id="creating-account" style="background-color: #f0f0f0;">
+      <h3>1. Creating an Account</h3>
+      <p>To use the platform, you need to create an account. Here’s how:</p>
+      <ol>
+        <li>Click on the 'Create Account' button on the homepage.</li>
+        <li>Enter a valid email address and a secure password.</li>
+        <li>Verify your email address through the confirmation email we send you.</li>
+        <li>Once confirmed, you can log in using your credentials.</li>
+      </ol>
+    </div>
+
+    <div class="section" id="searching-courses" style="background-color: #e0e0e0;">
+      <h3>2. Searching for Courses</h3>
+      <p>To search for courses offered by various institutions, follow these steps:</p>
+      <ol>
+        <li>Enter a keyword (e.g., "Computer Science") in the search bar.</li>
+        <li>Optionally, apply filters like Faculty, Intake size, or Salary range.</li>
+        <li>Click on the 'Search' button to see the results.</li>
+      </ol>
+    </div>
+
+    <div class="section" id="bookmarking-courses" style="background-color: #f0f0f0;">
+      <h3>3. Bookmarking Courses</h3>
+      <p>Bookmark courses that you are interested in for easy access later:</p>
+      <ol>
+        <li>While viewing course details, click on the 'Bookmark' icon.</li>
+        <li>Access your bookmarks from the 'Bookmarks' tab in your profile.</li>
+        <li>You can save up to 5 courses in your bookmarks.</li>
+      </ol>
+    </div>
+
+    <div class="section" id="comparing-courses" style="background-color: #e0e0e0;">
+      <h3>4. Comparing Courses</h3>
+      <p>To compare multiple courses:</p>
+      <ol>
+        <li>Navigate to the 'Compare Courses' section.</li>
+        <li>Select up to 5 courses from your bookmarks.</li>
+        <li>Choose the comparison metrics, such as employment rate or salary.</li>
+        <li>The system will display a side-by-side comparison of the selected courses.</li>
+      </ol>
+    </div>
+
+    <div class="section" id="visualizing-trends" style="background-color: #f0f0f0;">
+      <h3>5. Visualizing Trends</h3>
+      <p>To visualize data trends over time for a selected course:</p>
+      <ol>
+        <li>Select a course from your bookmarks.</li>
+        <li>Choose the metrics you'd like to see over time (e.g., employment rate, salary).</li>
+        <li>The system will generate an interactive chart showing trends.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CareerCompass. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

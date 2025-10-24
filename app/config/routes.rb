@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   post "login" => "sessions#create", as: :session
   delete "logout" => "sessions#destroy", as: :logout
 
+  get 'user_guide', to: 'user_guides#show'  # This will map to the 'show' action in UserGuidesController
+
   # Endpoints
   get "trends" => "trends#index", as: :trends
   get "search" => "search#index", as: :search
