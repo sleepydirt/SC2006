@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   allow_unauthenticated_access only: [ :new, :create ]
 
   def index
+    @user = User.find(Current.session.user_id)
   end
 
   def new
