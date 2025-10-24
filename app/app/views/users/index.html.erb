@@ -1,3 +1,75 @@
-<h1>
-  <%= User.find(Current.session.user_id).username %>
-</h1>
+<!-- h1 class="text-center mt-4" -->
+  <!--Welcome <%= User.find(Current.session.user_id).username %>!-->
+<!-- /h1 -->
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-7 bg-light" style="max-width: 800px;">
+
+      <!-- profile card -->
+      <div class="card border-0 text-center p-4 bg-light">
+        <!-- profile image -->
+        <div class="mb-3">
+          <img src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png' alt="Profile Image" class="rounded-circle border" width="120" height="120">
+          <div>
+            <a href="#" class="text-primary small text-decoration-none">Change Image</a>
+          </div>
+        </div>
+
+        <!-- personal info -->
+        <h5 class="fw-bold mb-3 text-start">Personal Information</h5>
+
+        <!-- style for the about me table -->
+        <style>
+          .bg-gray-400 {
+            background-color: #dee2e6 !important;
+          }
+          .table.custom-border,
+          .table.custom-border th,
+          .table.custom-border td {
+            background-color: #dee2e6;
+            border-color: #adb5bd !important;
+            width: 50%;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+          }
+          .table.custom-border th {
+            border-right: none;
+          }
+          .table.custom-border td {
+            border-left: none;
+          }
+          .table.custom-border {
+            border: 3px solid #adb5bd !important;
+            border-collapse: collapse;
+          }
+        </style>
+
+        <!-- the about me table -->
+        <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
+          <tr>
+            <th scope="row">Name</th>
+            <td><%= User.find(Current.session.user_id).username %></td>
+          </tr>
+          <tr>
+            <th scope="row">Course</th>
+            <td>Computer Science</td>
+          </tr>
+          <tr>
+            <th scope="row">Institution</th>
+            <td>NTU</td>
+          </tr>
+          <tr>
+            <th scope="row">Interests</th>
+            <td>Software Engineering</td>
+          </tr>
+        </table>
+        
+        <!-- edit profile button -->
+        <div class="mt-4">
+          <button class="btn btn-primary px-4 py-2">Edit Profile</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
