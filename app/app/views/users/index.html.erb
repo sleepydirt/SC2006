@@ -1,5 +1,8 @@
+<head>
+  <link rel="stylesheet" href="../../assets/stylesheets/users.css">
+</head>
 <!-- h1 class="text-center mt-4" -->
-  <!--Welcome <%= User.find(Current.session.user_id).username %>!-->
+  <!--Welcome <%= @user.username %>!-->
 <!-- /h1 -->
 <div class="container mt-4">
   <div class="row justify-content-center">
@@ -19,48 +22,24 @@
         <h5 class="fw-bold mb-3 text-start">Personal Information</h5>
 
         <!-- style for the about me table -->
-        <style>
-          .bg-gray-400 {
-            background-color: #dee2e6 !important;
-          }
-          .table.custom-border,
-          .table.custom-border th,
-          .table.custom-border td {
-            background-color: #dee2e6;
-            border-color: #adb5bd !important;
-            width: 50%;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-          }
-          .table.custom-border th {
-            border-right: none;
-          }
-          .table.custom-border td {
-            border-left: none;
-          }
-          .table.custom-border {
-            border: 3px solid #adb5bd !important;
-            border-collapse: collapse;
-          }
-        </style>
 
         <!-- the about me table -->
         <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
           <tr>
             <th scope="row">Name</th>
-            <td><%= User.find(Current.session.user_id).username %></td>
+            <td><%= @user.username %></td>
           </tr>
           <tr>
             <th scope="row">Course</th>
-            <td>Computer Science</td>
+            <td>Computer Science</td> <!-- @user.course -->
           </tr>
           <tr>
             <th scope="row">Institution</th>
-            <td>NTU</td>
+            <td>NTU</td> <!-- @user.institution -->
           </tr>
           <tr>
             <th scope="row">Interests</th>
-            <td>Software Engineering</td>
+            <td>Software Engineering</td> <!-- @user.interests -->
           </tr>
         </table>
         
