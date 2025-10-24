@@ -1,27 +1,28 @@
 class TrendsController < ApplicationController
   def index
-    csv_path = Rails.root.join("assets/data/cleaned_data.csv")
-    require "csv"
-    @programs = []
+    # Get all programs from the database
+    @programs = Course.all
 
-    CSV.foreach(csv_path, headers: true) do |row|
-      @programs << {
-        university: row["university"],
-        school: row["school"],
-        degree: row["degree"],
-        year: row["year"].to_i,
-        employment_rate_overall: row["employment_rate_overall"].to_f,
-        employment_rate_ft_perm: row["employment_rate_ft_perm"].to_f,
-        basic_monthly_mean: row["basic_monthly_mean"].to_f,
-        basic_monthly_median: row["basic_monthly_median"].to_f,
-        gross_monthly_mean: row["gross_monthly_mean"].to_f,
-        gross_monthly_median: row["gross_monthly_median"].to_f,
-        gross_mthly_25_percentile: row["gross_mthly_25_percentile"].to_f,
-        gross_mthly_75_percentile: row["gross_mthly_75_percentile"].to_f,
-        course_duration: row["course_duration"].to_f
+    # Convert numeric fields to float (if needed in JS)
+    @programs = @programs.map do |p|
+      {
+        university: p.university,
+        school: p.school,
+        degree: p.degree,
+        year: p.year,
+        employment_rate_overall: p.employment_rate_overall.to_f,
+        employment_rate_ft_perm: p.employment_rate_ft_perm.to_f,
+        basic_monthly_mean: p.basic_monthly_mean.to_f,
+        basic_monthly_median: p.basic_monthly_median.to_f,
+        gross_monthly_mean: p.gross_monthly_mean.to_f,
+        gross_monthly_median: p.gross_monthly_median.to_f,
+        gross_mthly_25_percentile: p.gross_mthly_25_percentile.to_f,
+        gross_mthly_75_percentile: p.gross_mthly_75_percentile.to_f,
+        #course_duration: p.course_duration.to_f
       }
     end
+
     # Unique list of universities for dropdown
-    @universities = @programs.map { |p| p[:university] }.uniq.sort
+    @universities = Course.select(:university).distinct.order(:university).pluck(:university)
   end
 end

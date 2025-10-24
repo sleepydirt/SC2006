@@ -11,7 +11,7 @@
         <!-- Field to visualise -->
         <div class="mb-4">
           <label class="form-label fw-bold mb-2">Select field to visualise</label>
-          <% ['employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median','course_duration'].each_with_index do |field, i| %>
+          <% ['employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median'].each_with_index do |field, i| %>
             <div class="form-check">
               <input class="form-check-input" type="radio" name="field" id="field<%= i+1 %>" value="<%= field %>" <%= 'checked' if i==0 %>>
               <label class="form-check-label" for="field<%= i+1 %>"><%= field.humanize %></label>
