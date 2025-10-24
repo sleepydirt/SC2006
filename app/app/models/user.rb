@@ -7,10 +7,10 @@ class User < ApplicationRecord
   # setting required: true in the frontend only checks client-side
   # so we need to validate server-side
   validates :email_address, presence: true, uniqueness: { message: "is already registered!" }
-  validates :password, presence: true
-  validates :password_confirmation, presence: true
-  validate :password_complexity
-  validate :passwords_match
+  validates :password, presence: true, on: :create
+  validates :password_confirmation, presence: true, on: :create
+  validate :password_complexity, if: :password_digest_changed?
+  validate :passwords_match, if: :password_digest_changed?
 
   private
 

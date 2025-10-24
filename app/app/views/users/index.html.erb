@@ -1,10 +1,12 @@
 <head>
-  <link rel="stylesheet" href="../../assets/stylesheets/users.css">
+  <style>
+    .edit-mode { display: none; }
+    .view-mode { display: table-row; }
+    body.editing .edit-mode { display: table-row; }
+    body.editing .view-mode { display: none; }
+  </style>
 </head>
-<!-- h1 class="text-center mt-4" -->
-  <!--Welcome <%= @user.username %>!-->
-<!-- /h1 -->
-<div class="container mt-4">
+<div class="container mt-4" data-controller="profile-edit">
   <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-7 bg-light" style="max-width: 800px;">
 
@@ -21,32 +23,84 @@
         <!-- personal info -->
         <h5 class="fw-bold mb-3 text-start">Personal Information</h5>
 
-        <!-- style for the about me table -->
+        <%= form_with(model: @user, url: update_user_path, method: :patch, local: true, data: { profile_edit_target: "form" }) do |form| %>
+          <!-- style for the about me table -->
 
-        <!-- the about me table -->
-        <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
-          <tr>
-            <th scope="row">Name</th>
-            <td><%= @user.username %></td>
-          </tr>
-          <tr>
-            <th scope="row">Course</th>
-            <td>Computer Science</td> <!-- @user.course -->
-          </tr>
-          <tr>
-            <th scope="row">Institution</th>
-            <td>NTU</td> <!-- @user.institution -->
-          </tr>
-          <tr>
-            <th scope="row">Interests</th>
-            <td>Software Engineering</td> <!-- @user.interests -->
-          </tr>
-        </table>
+          <!-- the about me table -->
+          <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
+            <tr class="view-mode">
+              <th scope="row">Name</th>
+              <td id="username-display"><%= @user.username || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Name</th>
+              <td>
+                <%= form.text_field :username, class: "form-control", placeholder: "Enter your username" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Course</th>
+              <td id="course-display"><%= @user.course || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Course</th>
+              <td>
+                <%= form.text_field :course, class: "form-control", placeholder: "e.g. Computer Science" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Institution</th>
+              <td id="institution-display"><%= @user.institution || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Institution</th>
+              <td>
+                <%= form.text_field :institution, class: "form-control", placeholder: "e.g. NTU, NUS, SMU" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Year of Study</th>
+              <td id="year-display"><%= @user.year_of_study || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Year of Study</th>
+              <td>
+                <%= form.number_field :year_of_study, class: "form-control", placeholder: "e.g. 1, 2, 3, 4", min: 1, max: 6 %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Interests</th>
+              <td id="interests-display"><%= @user.interests || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Interests</th>
+              <td>
+                <%= form.text_area :interests, class: "form-control", rows: 3, placeholder: "Tell us about your interests..." %>
+              </td>
+            </tr>
+          </table>
         
-        <!-- edit profile button -->
-        <div class="mt-4">
-          <button class="btn btn-primary px-4 py-2">Edit Profile</button>
-        </div>
+          <!-- edit profile button -->
+          <div class="mt-4">
+            <button type="button" 
+                    class="btn btn-primary px-4 py-2" 
+                    data-profile-edit-target="editButton"
+                    data-action="click->profile-edit#edit">
+              Edit Profile
+            </button>
+            <%= form.submit "Save Changes", 
+                class: "btn btn-success px-4 py-2 me-2", 
+                style: "display: none;",
+                data: { profile_edit_target: "saveButton" } %>
+            <button type="button" 
+                    class="btn btn-secondary px-4 py-2" 
+                    style="display: none;"
+                    data-profile-edit-target="cancelButton"
+                    data-action="click->profile-edit#cancel">
+              Cancel
+            </button>
+          </div>
+        <% end %>
 
       </div>
     </div>
