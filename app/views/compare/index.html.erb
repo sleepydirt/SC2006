@@ -1,4 +1,3 @@
-<h1>Compare Courses</h1>
 <div class="container-fluid py-4">
   <!-- Top bar spacing matches your navbar -->
   <div class="row gx-4">
@@ -21,7 +20,7 @@
               "Median Basic Monthly Salary (S$)"
             ].each_with_index do |label, i| %>
               <label class="list-group-item d-flex align-items-center gap-2">
-                <input class="form-check-input me-1" type="checkbox" value="<%= label %>"/>
+                <input class="form-check-input me-1" type="checkbox" value="<%= label %>" <%= i==2 ? 'checked' : '' %> />
                 <span><%= label %></span>
               </label>
             <% end %>
@@ -59,7 +58,7 @@
 
                 <% bookmarks.each do |b| %>
                   <label class="list-group-item d-flex align-items-center gap-2">
-                    <input class="form-check-input me-1 course-option" type="checkbox" value="<%= b[:id] %>" data-label="<%= b[:name] %>">
+                    <input class="form-check-input me-1 course-option" type="checkbox" value="<%= b[:id] %>" />
                     <span><%= b[:name] %></span>
                   </label>
                 <% end %>
@@ -137,3 +136,4 @@
     renderChips();
   });
 </script>
+
