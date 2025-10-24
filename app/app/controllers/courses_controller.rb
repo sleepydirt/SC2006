@@ -22,10 +22,15 @@ class CoursesController < ApplicationController
       "Singapore University of Technology and Design"
     ]
 
-    @courses = Course
-      .select("*, ts_rank_cd(to_tsvector(degree), to_tsquery('english', '#{params[:degree]}')) AS rank")
-      .where("to_tsvector('english', degree) @@ to_tsquery('english', ?)", params[:degree])
-      .order("rank")
+
+    if params[:degree]
+      @courses = Course
+        .select("*, ts_rank_cd(to_tsvector(degree), to_tsquery('english', '#{params[:degree]}')) AS rank")
+        .where("to_tsvector('english', degree) @@ to_tsquery('english', ?)", params[:degree])
+        .order("rank")
+    else
+      @courses = Course.all
+    end
 
     if params[:university]
       @courses = @courses.where("university IN (?)", params[:university].select { |k, v| v == "1" }.keys)

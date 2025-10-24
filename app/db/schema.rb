@@ -36,6 +36,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_22_191301) do
     t.string "university"
     t.string "school"
     t.string "degree"
+    t.integer "course_duration"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["university", "school", "degree"], name: "index_courses_on_university_and_school_and_degree", unique: true

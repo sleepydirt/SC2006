@@ -10,8 +10,7 @@
 
 require "csv"
 
-data = File.read(Rails.root.join("db", "GraduateEmploymentSurveyNTUNUSSITSMUSUSSSUTD.csv"))
-# data = File.read(Rails.root.join("db", "cleaned_data.csv"))
+data = File.read(Rails.root.join("db", "cleaned_data.csv"))
 data = CSV.parse(data, headers: :true)
 
 data.each do |row|
@@ -26,6 +25,7 @@ data.each do |row|
   row.delete("university")
   row.delete("school")
   row.delete("degree")
+  row.delete("course_duration")
   row["course"] = course
 
   CourseStat.create(row)
