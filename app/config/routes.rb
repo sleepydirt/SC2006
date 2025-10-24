@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   # modify endpoint paths so that it uses the /login endpoint for better readability
   root "search#index"
   resources :passwords, param: :token
-  resources :users, only: [ :index, :new, :create ], :path => "profile"
+  resources :users, only: [ :index, :new, :create ], path: "profile"
   patch "users" => "users#update", as: :update_user
   get "courses/query" => "courses#query", as: :courses_query
   resources :courses

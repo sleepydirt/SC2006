@@ -23,7 +23,6 @@ class UsersController < ApplicationController
   end
 
   def update
-
     if @user.update(profile_params)
       redirect_to users_path, notice: "Profile saved successfully!"
     else
