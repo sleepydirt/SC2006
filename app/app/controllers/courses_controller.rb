@@ -10,9 +10,6 @@ class CoursesController < ApplicationController
   end
 
   def query
-    puts "Params:"
-    puts params
-
     @universities = [
       "National University of Singapore",
       "Nanyang Technological University",
