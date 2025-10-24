@@ -18,7 +18,7 @@ class TrendsController < ApplicationController
         gross_monthly_median: p.gross_monthly_median.to_f,
         gross_mthly_25_percentile: p.gross_mthly_25_percentile.to_f,
         gross_mthly_75_percentile: p.gross_mthly_75_percentile.to_f,
-        #course_duration: p.course_duration.to_f
+        # course_duration: p.course_duration.to_f
       }
     end
 
