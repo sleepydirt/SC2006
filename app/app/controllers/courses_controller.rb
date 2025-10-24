@@ -19,11 +19,10 @@ class CoursesController < ApplicationController
       "Singapore University of Technology and Design"
     ]
 
-
     if params[:degree]
       @courses = Course
-        .select("*, ts_rank_cd(to_tsvector(degree), to_tsquery('english', '#{params[:degree]}')) AS rank")
-        .where("to_tsvector('english', degree) @@ to_tsquery('english', ?)", params[:degree])
+        .select("*, ts_rank_cd(to_tsvector(degree), websearch_to_tsquery('english', '#{params[:degree]}')) AS rank")
+        .where("to_tsvector('english', degree) @@ websearch_to_tsquery('english', ?)", params[:degree])
         .order("rank")
     else
       @courses = Course.all
