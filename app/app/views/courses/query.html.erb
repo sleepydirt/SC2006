@@ -10,7 +10,7 @@
         <% @universities.each do |university| %>
           <div class="form-check">
             <%= form.check_box "university[#{university}]", checked: params.dig(:university, university) == "1", class: "form-check-input" %>
-            <%= form.label university, class: "form-check-label" %>
+            <%= form.label "university[#{university}]", university, class: "form-check-label" %>
           </div>
         <% end %>
       </div>
