@@ -1,224 +1,97 @@
-<h1>Trends</h1>
-<p>Visualise the trends of any course here</p>
+<div class="container-fluid py-4" 
+     data-controller="trends"
+     data-trends-university-schools-value='<%= @university_schools.to_json %>'
+     data-trends-school-degrees-value='<%= @school_degrees.to_json %>'>
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-2">Trends</h1>
+      <p class="text-muted">Visualise the trends of any course here</p>
+    </div>
+  </div>
 
-<div class="content-wrapper">
-  <div class="row">
+  <div class="row g-4">
     <!-- Sidebar Filters -->
-    <div class="col-lg-3 mb-4">
-      <div class="sidebar">
-        <h5 class="section-title">Filters</h5>
+    <div class="col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Filters</h5>
 
-        <!-- Field to visualise -->
-        <div class="mb-4">
-          <label class="form-label fw-bold mb-2">Select field to visualise</label>
-          <% ['employment_rate_overall','employment_rate_ft_perm','basic_monthly_mean','basic_monthly_median','gross_monthly_mean','gross_monthly_median'].each_with_index do |field, i| %>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="field" id="field<%= i+1 %>" value="<%= field %>" <%= 'checked' if i==0 %>>
-              <label class="form-check-label" for="field<%= i+1 %>"><%= field.humanize %></label>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- University Filter -->
-        <div class="mb-3">
-          <label class="form-label fw-bold mb-1">Select University</label>
-          <select class="form-select" id="universitySelect">
-            <option value="">Select a university</option>
-            <% @programs.map { |p| p[:university] }.uniq.sort.each do |u| %>
-              <option value="<%= u %>"><%= u %></option>
+          <!-- Field to visualise -->
+          <!-- Dynamically generate and replace with a properly-formatted label -->
+          <div class="mb-4">
+            <label class="form-label fw-bold mb-2">Select field to visualise</label>
+            <% @field_options.each_with_index do |field_option, i| %>
+              <div class="form-check">
+                <input class="form-check-input" 
+                       type="radio" 
+                       name="field" 
+                       id="field<%= i+1 %>" 
+                       value="<%= field_option[:value] %>" 
+                       <%= 'checked' if i==0 %>
+                       data-trends-target="fieldRadio"
+                       data-action="change->trends#fieldChanged">
+                <label class="form-check-label" for="field<%= i+1 %>">
+                  <%= field_option[:label] %>
+                </label>
+              </div>
             <% end %>
-          </select>
-        </div>
+          </div>
 
-        <!-- School Filter -->
-        <div class="mb-3">
-          <label class="form-label fw-bold mb-1">Select School</label>
-          <select class="form-select" id="schoolSelect" disabled>
-            <option value="">Select a school</option>
-          </select>
-        </div>
+          <!-- University Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select University</label>
+            <select class="form-select" 
+                    data-trends-target="universitySelect"
+                    data-action="change->trends#universityChanged">
+              <option value="">Select a university</option>
+              <% @universities.each do |u| %>
+                <option value="<%= u %>"><%= u %></option>
+              <% end %>
+            </select>
+          </div>
 
-        <!-- Degree Filter (Multiple Selection) -->
-        <div class="mb-3">
-          <label class="form-label fw-bold mb-1">Select Degrees (up to 3 for comparison)</label>
-          <select class="form-select" id="degreeSelect" multiple size="8" disabled>
-            <option value="">Select degrees...</option>
-          </select>
-          <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
-        </div>
+          <!-- School Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select School</label>
+            <select class="form-select" 
+                    data-trends-target="schoolSelect"
+                    data-action="change->trends#schoolChanged"
+                    disabled>
+              <option value="">Select a school</option>
+            </select>
+          </div>
 
-        <!-- Apply Filters -->
-        <button class="btn btn-primary w-100" id="applyFilters">Apply Filters</button>
+          <!-- Degree Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select Degrees (up to 3 for comparison)</label>
+            <select class="form-select" 
+                    data-trends-target="degreeSelect"
+                    multiple 
+                    size="8" 
+                    disabled>
+              <option value="">Select degrees...</option>
+            </select>
+            <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+          </div>
+
+          <!-- Apply Filters -->
+          <button class="btn btn-primary w-100 mt-3" 
+                  data-action="click->trends#updateChart">
+            Apply Filters
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Chart Area -->
     <div class="col-lg-9">
-      <div class="chart-container" style="height: 500px;">
-        <canvas id="trendChart"></canvas>
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+            <canvas data-trends-target="canvas"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-let chart;
-const programs = <%= raw @programs.to_json %>;
-const colors = [
-  { bg: 'rgba(100,149,237,0.6)', border: '#6495ed' },
-  { bg: 'rgba(255,107,107,0.6)', border: '#ff6b6b' },
-  { bg: 'rgba(72,201,176,0.6)', border: '#48c9b0' },
-];
-
-function updateSchoolOptions() {
-  const university = document.getElementById('universitySelect').value;
-  const schoolSelect = document.getElementById('schoolSelect');
-  const degreeSelect = document.getElementById('degreeSelect');
-
-  schoolSelect.innerHTML = '<option value="">Select a school</option>';
-  degreeSelect.innerHTML = '<option value="">Select degrees...</option>';
-  degreeSelect.disabled = true;
-
-  if (!university) {
-    schoolSelect.disabled = true;
-    return;
-  }
-
-  schoolSelect.disabled = false;
-
-  const schools = programs
-    .filter(p => p.university === university)
-    .map(p => p.school)
-    .filter((v, i, a) => a.indexOf(v) === i)
-    .sort();
-
-  schools.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    schoolSelect.appendChild(opt);
-  });
-}
-
-function updateDegreeOptions() {
-  const university = document.getElementById('universitySelect').value;
-  const school = document.getElementById('schoolSelect').value;
-  const degreeSelect = document.getElementById('degreeSelect');
-
-  degreeSelect.innerHTML = '<option value="">Select degrees...</option>';
-  if (!university || !school) {
-    degreeSelect.disabled = true;
-    return;
-  }
-
-  degreeSelect.disabled = false;
-  const degrees = programs
-    .filter(p => p.university === university && p.school === school)
-    .map(p => p.degree)
-    .filter((v, i, a) => a.indexOf(v) === i)
-    .sort();
-
-  degrees.forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d;
-    opt.textContent = d;
-    degreeSelect.appendChild(opt);
-  });
-  degreeSelect.selectedIndex = -1; // Clear previous selection
-}
-
-function generateChartData(field) {
-  const university = document.getElementById('universitySelect').value;
-  const school = document.getElementById('schoolSelect').value;
-  const selectedDegrees = Array.from(document.getElementById('degreeSelect').selectedOptions)
-    .map(o => o.value)
-    .filter(v => v)
-    .slice(0, 3);
-
-  if (!university || !school || selectedDegrees.length === 0) return { labels: [], datasets: [] };
-
-  const years = Array.from({length: 11}, (_, i) => (2013 + i).toString()); // 2013-2023
-
-  const datasets = selectedDegrees.map((degree, idx) => {
-    const degreeData = programs.filter(p =>
-      p.university === university && p.school === school && p.degree === degree
-    );
-
-    const dataByYear = {};
-    degreeData.forEach(p => { dataByYear[p.year] = parseFloat(p[field]) || 0; });
-    const data = years.map(y => dataByYear[y] ?? null);
-
-    return {
-      label: degree,
-      data,
-      backgroundColor: colors[idx % colors.length].bg,
-      borderColor: colors[idx % colors.length].border,
-      borderWidth: 2,
-      fill: false,
-      tension: 0.1,
-      spanGaps: true
-    };
-  });
-
-  return { labels: years, datasets };
-}
-
-function createChart(chartData) {
-  const ctx = document.getElementById('trendChart').getContext('2d');
-  if (chart) chart.destroy();
-
-  if (!chartData.labels.length) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fillStyle = '#666';
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Please select university, school, and degree(s) to view trends',
-      ctx.canvas.width / 2, ctx.canvas.height / 2);
-    return;
-  }
-
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: chartData,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, position: 'top' },
-        tooltip: { mode: 'index', intersect: false }
-      },
-      scales: {
-        x: { title: { display: true, text: 'Year' } },
-        y: { beginAtZero: true, title: { display: true, text: 'Value' } }
-      },
-      interaction: { mode: 'nearest', axis: 'x', intersect: false }
-    }
-  });
-}
-
-function updateChart() {
-  const field = document.querySelector('input[name="field"]:checked').value;
-  const chartData = generateChartData(field);
-  createChart(chartData);
-}
-
-function initChart() {
-  const ctx = document.getElementById('trendChart').getContext('2d');
-
-  document.getElementById('universitySelect').addEventListener('change', () => {
-    updateSchoolOptions();
-    updateDegreeOptions();
-  });
-  document.getElementById('schoolSelect').addEventListener('change', updateDegreeOptions);
-  document.getElementById('applyFilters').addEventListener('click', updateChart);
-  document.querySelectorAll('input[name="field"]').forEach(r => r.addEventListener('change', () => {
-    if (chart && chart.data.datasets.length > 0) updateChart();
-  }));
-}
-
-document.addEventListener('turbo:load', initChart);
-document.addEventListener('DOMContentLoaded', initChart);
-</script>
