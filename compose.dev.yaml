@@ -4,7 +4,9 @@ services:
       context: app
       dockerfile: Dockerfile.dev
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        restart: true
     environment:
       RAILS_MASTER_KEY: 4054e22bee602af3d9ee514bc1553069  # This is a default dummy key so that credentials do not have do be regenerated for development
       DATABASE_HOST: db
@@ -22,6 +24,12 @@ services:
       POSTGRES_DB: dev
     expose:
       - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
     volumes:
       - db:/var/lib/postgresql
       - ./db:/docker-entrypoint-initdb.d
