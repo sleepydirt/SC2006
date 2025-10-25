@@ -1,4 +1,0 @@
-#!/bin/bash
-
-./bin/rails db:prepare
-exec ./bin/rails s -b 0.0.0.0
