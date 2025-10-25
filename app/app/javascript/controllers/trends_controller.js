@@ -231,7 +231,7 @@ export default class extends Controller {
 
     // If no data, show placeholder message
     if (!chartData.labels.length) {
-      this.initializeCanvas()
+      this.initialiseCanvas()
       return
     }
 
