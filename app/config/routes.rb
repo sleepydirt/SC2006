@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
   # Endpoints
   get "trends" => "trends#index", as: :trends
+  get "trends/data" => "trends#data", as: :trends_data
   get "search" => "search#index", as: :search
   get "compare" => "compare#index", as: :compare
 
