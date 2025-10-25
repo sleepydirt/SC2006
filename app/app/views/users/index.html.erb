@@ -30,7 +30,7 @@
           <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
             <tr class="view-mode">
               <th scope="row">Name</th>
-              <td id="username-display"><%= @user.username || "Not set" %></td>
+              <td id="username-display"><%= @user.username.presence || "Not set" %></td>
             </tr>
             <tr class="edit-mode">
               <th scope="row">Name</th>
@@ -40,7 +40,7 @@
             </tr>
             <tr class="view-mode">
               <th scope="row">Course</th>
-              <td id="course-display"><%= @user.course || "Not set" %></td>
+              <td id="course-display"><%= @user.course.presence || "Not set" %></td>
             </tr>
             <tr class="edit-mode">
               <th scope="row">Course</th>
@@ -50,7 +50,7 @@
             </tr>
             <tr class="view-mode">
               <th scope="row">Institution</th>
-              <td id="institution-display"><%= @user.institution || "Not set" %></td>
+              <td id="institution-display"><%= @user.institution.presence || "Not set" %></td>
             </tr>
             <tr class="edit-mode">
               <th scope="row">Institution</th>
@@ -60,7 +60,7 @@
             </tr>
             <tr class="view-mode">
               <th scope="row">Year of Study</th>
-              <td id="year-display"><%= @user.year_of_study || "Not set" %></td>
+              <td id="year-display"><%= @user.year_of_study.presence || "Not set" %></td>
             </tr>
             <tr class="edit-mode">
               <th scope="row">Year of Study</th>
@@ -70,7 +70,7 @@
             </tr>
             <tr class="view-mode">
               <th scope="row">Interests</th>
-              <td id="interests-display"><%= @user.interests || "Not set" %></td>
+              <td id="interests-display"><%= @user.interests.presence || "Not set" %></td>
             </tr>
             <tr class="edit-mode">
               <th scope="row">Interests</th>
