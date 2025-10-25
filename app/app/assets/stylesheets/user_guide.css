@@ -1,32 +1,4 @@
 /* app/assets/stylesheets/user_guide.css */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
-}
-
-header {
-  background-color: #333;
-  color: white;
-  padding: 10px;
-}
-
-header nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-header nav ul li {
-  display: inline;
-  margin-right: 15px;
-}
-
-header nav ul li a {
-  color: white;
-  text-decoration: none;
-}
 
 .user-guide {
   max-width: 900px;
@@ -52,13 +24,3 @@ header nav ul li a {
   color: #0066cc;
 }
 
-footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #333;
-  color: white;
-}
-
-footer p {
-  margin: 0;
-}
