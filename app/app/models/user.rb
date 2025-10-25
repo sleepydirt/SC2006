@@ -11,7 +11,7 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: true, on: :create
   validate :password_complexity, if: :password_digest_changed?
   validate :passwords_match, if: :password_digest_changed?
-  
+
   # prevent users from setting blank string when updating profile
   validates :course, length: { minimum: 1 }, allow_nil: true, if: -> { course.present? }
   validates :institution, length: { minimum: 1 }, allow_nil: true, if: -> { institution.present? }

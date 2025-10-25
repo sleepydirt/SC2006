@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   def check_profile_completion_notice
     # Only show notice if not on the profile page itself
     return if controller_name == "users" && action_name == "index"
-    
+
     if Current.user
       helper = Object.new.extend(ApplicationHelper)
       unless helper.profile_complete?(Current.user)
