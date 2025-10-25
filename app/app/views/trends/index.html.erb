@@ -1,2 +1,90 @@
-<h1>Trends</h1>
-<p>Visualise the trends of any course here</p>
+<div class="container-fluid py-4" 
+     data-controller="trends"
+     data-trends-university-schools-value='<%= @university_schools.to_json %>'
+     data-trends-school-degrees-value='<%= @school_degrees.to_json %>'>
+  <div class="row g-4">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Filters</h5>
+
+          <!-- Field to visualise -->
+          <!-- Dynamically generate and replace with a properly-formatted label -->
+          <div class="mb-4">
+            <label class="form-label fw-bold mb-2">Select field to visualise</label>
+            <% @field_options.each_with_index do |field_option, i| %>
+              <div class="form-check">
+                <input class="form-check-input" 
+                       type="radio" 
+                       name="field" 
+                       id="field<%= i+1 %>" 
+                       value="<%= field_option[:value] %>" 
+                       <%= 'checked' if i==0 %>
+                       data-trends-target="fieldRadio"
+                       data-action="change->trends#fieldChanged">
+                <label class="form-check-label" for="field<%= i+1 %>">
+                  <%= field_option[:label] %>
+                </label>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- University Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select University</label>
+            <select class="form-select" 
+                    data-trends-target="universitySelect"
+                    data-action="change->trends#universityChanged">
+              <option value="">Select a university</option>
+              <% @universities.each do |u| %>
+                <option value="<%= u %>"><%= u %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <!-- School Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select School</label>
+            <select class="form-select" 
+                    data-trends-target="schoolSelect"
+                    data-action="change->trends#schoolChanged"
+                    disabled>
+              <option value="">Select a school</option>
+            </select>
+          </div>
+
+          <!-- Degree Filter -->
+          <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select Degrees (up to 3 for comparison)</label>
+            <select class="form-select" 
+                    data-trends-target="degreeSelect"
+                    multiple 
+                    size="8" 
+                    disabled>
+              <option value="">Select degrees...</option>
+            </select>
+            <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+          </div>
+
+          <!-- Apply Filters -->
+          <button class="btn btn-primary w-100 mt-3" 
+                  data-action="click->trends#updateChart">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Area -->
+    <div class="col-lg-9">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+            <canvas data-trends-target="canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
