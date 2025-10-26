@@ -5,7 +5,8 @@ Rails.application.routes.draw do
 
   # User
   resources :passwords, param: :token
-  resources :users
+  resources :users, only: [ :index, :new, :create ], path: "profile"
+  patch "users" => "users#update", as: :update_user
 
   # Course
   get "courses/query" => "courses#query", as: :courses_query
