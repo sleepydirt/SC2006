@@ -26,7 +26,6 @@ Rails.application.routes.draw do
   get "trends/data" => "trends#data", as: :trends_data
   get "search" => "search#index", as: :search
   get "compare" => "compare#index", as: :compare
-  get "coffee" => "coffee#index", as: :coffee
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
