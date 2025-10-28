@@ -1,18 +1,29 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # modify endpoint paths so that it uses the /login endpoint for better readability
-  root "search#index"
+  root "index#index"
+
+  # User
   resources :passwords, param: :token
-  resources :users
+  resources :users, only: [ :index, :new, :create ], path: "profile"
+  patch "users" => "users#update", as: :update_user
+
+  # Course
   get "courses/query" => "courses#query", as: :courses_query
   resources :courses
+
+  # CourseStat
+  resources :course_stats
 
   get "login" => "sessions#new", as: :new_session
   post "login" => "sessions#create", as: :session
   delete "logout" => "sessions#destroy", as: :logout
 
+  get "user_guide", to: "user_guides#show"  # This will map to the 'show' action in UserGuidesController
+
   # Endpoints
   get "trends" => "trends#index", as: :trends
+  get "trends/data" => "trends#data", as: :trends_data
   get "search" => "search#index", as: :search
   get "compare" => "compare#index", as: :compare
 

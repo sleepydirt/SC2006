@@ -69,7 +69,7 @@
                         <%= link_to "Trends", trends_path, class: "nav-link" %>
                     </li>
                     <li class="nav-item">
-                        <%= button_to search_path, method: :get, form_class: "d-inline", class: "btn btn-primary d-flex align-items-center gap-2" do %>
+                        <%= button_to courses_query_path, method: :get, form_class: "d-inline", class: "btn btn-primary d-flex align-items-center gap-2" do %>
                         <span>Search</span>
                         <i class="bi bi-search"></i>
                         <% end %>
@@ -102,7 +102,7 @@
                             <div class="rounded-circle bg-dark flex-shrink-0" style="width: 32px; height: 32px;"></div>
                             <div class="ms-2">
                                 <div class="fw-bold small"><%= Current.user.username %></div>
-                                <div style="font-size: 0.75rem; opacity: 0.7;">NTU Computer Science, Year 3</div>
+                                <div style="font-size: 0.75rem; opacity: 0.7;"><%= user_profile_subtitle(Current.user) %></div>
                             </div>
                         </a>
 
@@ -118,11 +118,10 @@
                                 <% end %>
                             </li>
                             <li>
-                                <%= link_to "#", class: "dropdown-item d-flex align-items-center" do %>
-                                <i class="bi bi-journal-text menu-ico"></i><span>User Guide</span>
+                                <%= link_to user_guide_path, class: "dropdown-item d-flex align-items-center" do %>
+                                    <i class="bi bi-journal-text menu-ico"></i><span>User Guide</span>
                                 <% end %>
                             </li>
-
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

@@ -1,0 +1,7 @@
+<ul>
+  <% @course_stats.each do |course_stat| %>
+    <li>
+      <%= course_stat.university %> (<%= course_stat.year %>): <%= course_stat.degree %>
+    </li>
+  <% end %>
+</ul>

@@ -14,6 +14,7 @@ You do not need to configure any environment variables for development.
 
 > [!IMPORTANT]  
 > These scripts only work on a bash terminal. For Windows machines, please use the docker compose commands instead.
+> Please include the --build and -v flags if you are rebuilding the container.
 
 ```bash
 $ ./scripts/dev-up.sh
@@ -34,7 +35,7 @@ $ ./scripts/dev-down.sh
 Alternatively,
 
 ```bash
-$ docker compose -f compose.dev.yaml down
+$ docker compose -f compose.dev.yaml down -v
 ```
 
 Ensure that the server is running in development mode:

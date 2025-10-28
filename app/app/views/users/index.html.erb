@@ -1,3 +1,108 @@
-<h1>
-  <%= User.find(Current.session.user_id).username %>
-</h1>
+<head>
+  <style>
+    .edit-mode { display: none; }
+    .view-mode { display: table-row; }
+    body.editing .edit-mode { display: table-row; }
+    body.editing .view-mode { display: none; }
+  </style>
+</head>
+<div class="container mt-4" data-controller="profile-edit">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-7 bg-light" style="max-width: 800px;">
+
+      <!-- profile card -->
+      <div class="card border-0 text-center p-4 bg-light">
+        <!-- profile image -->
+        <div class="mb-3">
+          <img src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png' alt="Profile Image" class="rounded-circle border" width="120" height="120">
+          <div>
+            <a href="#" class="text-primary small text-decoration-none">Change Image</a>
+          </div>
+        </div>
+
+        <!-- personal info -->
+        <h5 class="fw-bold mb-3 text-start">Personal Information</h5>
+
+        <%= form_with(model: @user, url: update_user_path, method: :patch, local: true, data: { profile_edit_target: "form" }) do |form| %>
+          <!-- style for the about me table -->
+
+          <!-- the about me table -->
+          <table class="table table-bordered custom-border text-start mx-auto" style="width: 100%;">
+            <tr class="view-mode">
+              <th scope="row">Name</th>
+              <td id="username-display"><%= @user.username.presence || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Name</th>
+              <td>
+                <%= form.text_field :username, class: "form-control", placeholder: "Enter your username" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Course</th>
+              <td id="course-display"><%= @user.course.presence || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Course</th>
+              <td>
+                <%= form.text_field :course, class: "form-control", placeholder: "e.g. Computer Science" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Institution</th>
+              <td id="institution-display"><%= @user.institution.presence || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Institution</th>
+              <td>
+                <%= form.text_field :institution, class: "form-control", placeholder: "e.g. NTU, NUS, SMU" %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Year of Study</th>
+              <td id="year-display"><%= @user.year_of_study.presence || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Year of Study</th>
+              <td>
+                <%= form.number_field :year_of_study, class: "form-control", placeholder: "e.g. 1, 2, 3, 4", min: 1, max: 6 %>
+              </td>
+            </tr>
+            <tr class="view-mode">
+              <th scope="row">Interests</th>
+              <td id="interests-display"><%= @user.interests.presence || "Not set" %></td>
+            </tr>
+            <tr class="edit-mode">
+              <th scope="row">Interests</th>
+              <td>
+                <%= form.text_area :interests, class: "form-control", rows: 3, placeholder: "Tell us about your interests..." %>
+              </td>
+            </tr>
+          </table>
+        
+          <!-- edit profile button -->
+          <div class="mt-4">
+            <button type="button" 
+                    class="btn btn-primary px-4 py-2" 
+                    data-profile-edit-target="editButton"
+                    data-action="click->profile-edit#edit">
+              Edit Profile
+            </button>
+            <%= form.submit "Save Changes", 
+                class: "btn btn-success px-4 py-2 me-2", 
+                style: "display: none;",
+                data: { profile_edit_target: "saveButton" } %>
+            <button type="button" 
+                    class="btn btn-secondary px-4 py-2" 
+                    style="display: none;"
+                    data-profile-edit-target="cancelButton"
+                    data-action="click->profile-edit#cancel">
+              Cancel
+            </button>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+</div>
