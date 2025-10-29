@@ -61,7 +61,7 @@ class CompareController < ApplicationController
     courses_data = Course.where(id: course_ids).includes(:course_stats).map do |course|
       # Find the stats for the specified year
       stat = course.course_stats.find { |cs| cs.year == year }
-      
+
       # Get previous year's stat - find the most recent year before the selected year
       prev_stat = course.course_stats
                         .select { |cs| cs.year < year }
