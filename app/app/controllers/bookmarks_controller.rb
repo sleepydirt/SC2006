@@ -10,6 +10,6 @@ class BookmarksController < ApplicationController
       Bookmark.find_by(course_id: params[:course_id], user: Current.user).destroy
     end
 
-    render partial: "course", locals: {course: Course.find(params[:course_id])}
+    render partial: "course", locals: { course: Course.find(params[:course_id]) }
   end
 end
