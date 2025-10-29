@@ -67,6 +67,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_26_175920) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "course"
+    t.string "institution"
+    t.string "interests"
+    t.integer "year_of_study"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

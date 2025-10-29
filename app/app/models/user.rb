@@ -10,12 +10,26 @@ class User < ApplicationRecord
   # setting required: true in the frontend only checks client-side
   # so we need to validate server-side
   validates :email_address, presence: true, uniqueness: { message: "is already registered!" }
-  validates :password, presence: true
-  validates :password_confirmation, presence: true
-  validate :password_complexity
-  validate :passwords_match
+  validates :password, presence: true, on: :create
+  validates :password_confirmation, presence: true, on: :create
+  validate :password_complexity, if: :password_digest_changed?
+  validate :passwords_match, if: :password_digest_changed?
+
+  # prevent users from setting blank string when updating profile
+  validates :course, length: { minimum: 1 }, allow_nil: true, if: -> { course.present? }
+  validates :institution, length: { minimum: 1 }, allow_nil: true, if: -> { institution.present? }
+  validates :year_of_study, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 6 }, allow_nil: true, if: -> { year_of_study.present? }
+
+  # normalize blank strings to nil
+  before_validation :normalize_profile_fields
 
   private
+
+  def normalize_profile_fields
+    self.course = nil if course.blank?
+    self.institution = nil if institution.blank?
+    self.year_of_study = nil if year_of_study.blank?
+  end
 
   # helper function to enforce password complexity server-side
   def password_complexity
