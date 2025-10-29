@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password validations: false
   has_many :sessions, dependent: :destroy
 
+  has_many :bookmarks
   has_many :courses, through: :bookmarks
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
