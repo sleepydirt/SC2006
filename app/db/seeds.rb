@@ -14,7 +14,7 @@ data = File.read(Rails.root.join("db", "cleaned_data.csv"))
 data = CSV.parse(data, headers: :true)
 
 data.each do |row|
-  c = Course.create(row.to_h.slice("university", "school", "degree")) rescue nil
+  c = Course.create(row.to_h.slice("university", "school", "degree", "course_duration")) rescue nil
 end
 
 data.each do |row|
