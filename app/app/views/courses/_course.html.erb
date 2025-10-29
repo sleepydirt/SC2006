@@ -1,18 +1,18 @@
-<turbo-frame id="course_<%= course.id %>">
-  <div class="d-flex flex-row rounded bg-secondary-subtle p-3 m-1">
-    <div class="col-10">
-      <a href="<%= course_path(course.id) %>" class="text-reset text-decoration-none">
-        <div class="fw-bold">
-          <%= course.degree %>
-        </div>
-        <div>
-          <%= course.university %>
-        </div>
-      </a>
-    </div>
-    <div class="col-2 d-flex align-items-center justify-content-end px-3">
-      <%= form_with url: bookmarks_path do |form| %>
-        <%= form.hidden_field :course_id, value: course.id %>
+<div class="d-flex flex-row rounded bg-secondary-subtle p-3 m-1">
+  <div class="col-10">
+    <a href="<%= course_path(course.id) %>" class="text-reset text-decoration-none">
+      <div class="fw-bold">
+        <%= course.degree %>
+      </div>
+      <div>
+        <%= course.university %>
+      </div>
+    </a>
+  </div>
+  <div class="col-2 d-flex align-items-center justify-content-end px-3">
+  <turbo-frame id="course_<%= course.id %>">
+    <%= form_with url: bookmarks_path do |form| %>
+      <%= form.hidden_field :course_id, value: course.id %>
         <button type="submit" class="btn">
           <% if authenticated? %>
             <% if Bookmark.find_by(user: Current.user, course_id: course.id) %>
@@ -25,6 +25,6 @@
           <% end %>
         </button>
       <% end %>
-    </div>
+    </turbo-frame>
   </div>
-</turbo-frame>
+</div>

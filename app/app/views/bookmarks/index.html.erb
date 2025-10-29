@@ -1,3 +1,13 @@
-<% @courses.each do |course| %>
-  <%= render "course", course: course %>
-<% end %>
+<div class="container-fluid py-5">
+  <% if @courses.any? %>
+    <% @courses.each do |course| %>
+      <%= render "course", course: course %>
+    <% end %>
+  <% else %>
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+      <p>
+        You do not have any bookmarks yet
+      </p>
+    </div>
+  <% end %>
+</div>
