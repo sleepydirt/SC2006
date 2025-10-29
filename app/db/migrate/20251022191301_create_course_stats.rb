@@ -2,9 +2,6 @@ class CreateCourseStats < ActiveRecord::Migration[8.0]
   def change
     create_table :course_stats do |t|
       t.integer :year
-      # t.string :university
-      # t.string :school
-      # t.string :degree
       t.string :employment_rate_overall
       t.string :employment_rate_ft_perm
       t.string :basic_monthly_mean
