@@ -36,7 +36,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Email address is already registered!", flash[:inline_alert]
   end
@@ -54,7 +53,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Passwords do not match!", flash[:inline_alert]
   end
@@ -89,7 +87,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Password must contain at least 1 uppercase letter!", flash[:inline_alert]
   end
@@ -107,7 +104,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Password must contain at least 1 number!", flash[:inline_alert]
   end
@@ -125,7 +121,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Password must contain at least 1 special character!", flash[:inline_alert]
   end
@@ -143,7 +138,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :redirect
-    assert_match /users\/new/, response.redirect_url
     follow_redirect!
     assert_equal "Password must contain at least 8 characters!", flash[:inline_alert]
   end

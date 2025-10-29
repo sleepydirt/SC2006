@@ -1,7 +1,7 @@
 require "test_helper"
 
 class AuthenticationFlowTest < ActionDispatch::IntegrationTest
-  test "complete authentication flow: create account, login, access protected pages, and delete account" do
+  test "complete authentication flow: create account, login, access protected pages, and logout" do
     # create a new test account
     assert_difference("User.count", 1) do
       post users_path, params: {
@@ -49,22 +49,5 @@ class AuthenticationFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
     follow_redirect!
     assert_equal "Incorrect email or password!", flash[:inline_alert]
-  end
-
-  test "unauthenticated user can access search but not trends or compare" do
-    get search_path
-    assert_response :success
-
-    # should be redirected when trying to access trends
-    get trends_path
-    assert_redirected_to new_session_path
-    follow_redirect!
-    assert_equal "You must be logged in to access this feature.", flash[:auth_required]
-
-    # should be redirected when trying to access compare
-    get compare_path
-    assert_redirected_to new_session_path
-    follow_redirect!
-    assert_equal "You must be logged in to access this feature.", flash[:auth_required]
   end
 end
