@@ -1,4 +1,5 @@
 class Course < ApplicationRecord
+  has_many :course_stats
   has_many :users, through: :bookmarks
 
   include PgSearch::Model

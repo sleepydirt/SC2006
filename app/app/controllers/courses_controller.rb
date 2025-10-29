@@ -6,7 +6,7 @@ class CoursesController < ApplicationController
 
   def show
     @course = Course.find(params[:id])
-    @course_stats = CourseStat.where(course_id: @course.id).order(year: :desc)
+    @course_stats = @course.course_stats.order(year: :desc)
   end
 
   def query
