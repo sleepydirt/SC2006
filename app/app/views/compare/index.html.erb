@@ -1,6 +1,9 @@
-<h1>Compare Courses</h1>
-<div class="container-fluid py-4">
-  <!-- Top bar spacing matches your navbar -->
+<div class="container-fluid py-4" 
+     data-controller="compare"
+     data-compare-courses-value='<%= @courses.to_json %>'
+     data-compare-field-labels-value='<%= CompareController::FIELD_LABELS.to_json %>'>
+  <h1 class="mb-4">Compare Courses</h1>
+  
   <div class="row gx-4">
     <!-- Sidebar -->
     <aside class="col-12 col-lg-3 mb-4 mb-lg-0">
@@ -8,76 +11,88 @@
         <div class="card-body">
           <h5 class="fw-semibold mb-3">Filters</h5>
 
+          <!-- Field Filters -->
           <p class="text-muted mb-2 small">Select fields to display</p>
           <div class="list-group list-group-flush mb-3" id="fieldFilters">
-            <% [
-              "Course Duration",
-              "Intake Size",
-              "Overall Employment Rate",
-              "Full-time Permanent Employment Rate",
-              "Mean Gross Monthly Salary (S$)",
-              "Median Gross Monthly Salary (S$)",
-              "Mean Basic Monthly Salary (S$)",
-              "Median Basic Monthly Salary (S$)"
-            ].each_with_index do |label, i| %>
+            <% @field_options.each do |field_option| %>
               <label class="list-group-item d-flex align-items-center gap-2">
-                <input class="form-check-input me-1" type="checkbox" value="<%= label %>"/>
-                <span><%= label %></span>
+                <input class="form-check-input me-1" 
+                       type="checkbox" 
+                       value="<%= field_option[:value] %>"
+                       data-compare-target="fieldCheckbox"
+                       data-action="change->compare#filterChanged"/>
+                <span><%= field_option[:label] %></span>
               </label>
             <% end %>
           </div>
 
+          <!-- Academic Year Selector -->
           <div class="mb-3">
-            <label class="form-label">Academic Year</label>
-            <select class="form-select">
-              <option selected>AY2025</option>
-              <option>AY2024</option>
-              <option>AY2023</option>
+            <label class="form-label fw-semibold">Academic Year</label>
+            <select class="form-select" 
+                    data-compare-target="yearSelect"
+                    data-action="change->compare#yearChanged">
+              <% @academic_years.each do |year| %>
+                <option value="<%= year %>" <%= 'selected' if year == 2023 %>>
+                  AY<%= year %>
+                </option>
+              <% end %>
             </select>
           </div>
 
-          <!-- Course selector -->
+          <!-- Course Selector -->
           <div class="mb-2 d-flex align-items-center justify-content-between">
-            <label class="form-label m-0">Select courses</label>
-            <button class="btn btn-link p-0 small" id="clearCourses" type="button">Clear</button>
+            <label class="form-label m-0 fw-semibold">Select courses</label>
+            <button class="btn btn-link p-0 small" 
+                    data-compare-target="clearCourses"
+                    data-action="click->compare#clearAllCourses" 
+                    type="button">Clear</button>
           </div>
 
           <div class="dropdown w-100">
-            <button class="form-control d-flex justify-content-between align-items-center" data-bs-toggle="dropdown" type="button" aria-expanded="false">
-              <span id="selectedCourseChips" class="d-flex flex-wrap gap-1"></span>
+            <button class="form-control d-flex justify-content-between align-items-center" 
+                    data-bs-toggle="dropdown" 
+                    type="button" 
+                    aria-expanded="false">
+              <span data-compare-target="selectedCourseChips" 
+                    class="d-flex flex-wrap gap-1"></span>
               <span class="ms-auto text-muted"><i class="bi bi-chevron-down"></i></span>
             </button>
 
             <div class="dropdown-menu p-0 w-100 shadow rounded-3 overflow-hidden">
-              <div class="p-2 border-bottom small text-muted">Bookmarks</div>
-              <div class="list-group list-group-flush" style="max-height: 260px; overflow:auto;">
-                <% bookmarks = [
-                  { id: "ntu-cs", name: "NTU, Bachelor of Computing (Hons) in Computer Science" },
-                  { id: "nus-cs", name: "NUS, Bachelor of Computing in Computer Science (with Honours*)" },
-                  { id: "sit-sci", name: "SIT, Bachelor of Science with Honours in Information Security" }
-                ] %>
-
-                <% bookmarks.each do |b| %>
-                  <label class="list-group-item d-flex align-items-center gap-2">
-                    <input class="form-check-input me-1 course-option" type="checkbox" value="<%= b[:id] %>" data-label="<%= b[:name] %>">
-                    <span><%= b[:name] %></span>
+              <div class="p-2 border-bottom small text-muted">Available Courses</div>
+              <div class="list-group list-group-flush" style="max-height: 400px; overflow:auto;" data-compare-target="courseList">
+                <% @courses.each do |course| %>
+                  <label class="list-group-item d-flex align-items-start gap-2 py-2" data-course-id="<%= course[:id] %>">
+                    <input class="form-check-input me-1 mt-1 flex-shrink-0" 
+                           type="checkbox" 
+                           value="<%= course[:id] %>" 
+                           data-label="<%= course[:display_name] %>"
+                           data-compare-target="courseOption"
+                           data-action="change->compare#courseChanged">
+                    <div class="flex-grow-1">
+                      <div class="small"><%= course[:degree] %></div>
+                      <small class="text-muted"><%= course[:university] %></small>
+                    </div>
                   </label>
                 <% end %>
               </div>
             </div>
           </div>
 
-          <div class="form-text mt-2">Pick 2–3 courses to compare later.</div>
+          <div class="form-text mt-2">Select 2–5 courses to compare.</div>
         </div>
       </div>
     </aside>
 
-    <!-- Main canvas -->
+    <!-- Main Canvas -->
     <main class="col-12 col-lg-9">
-      <div class="comparison-canvas d-flex align-items-center justify-content-center text-muted">
-        <div class="text-center">
-          <div class="mb-2"><i class="bi bi-columns-gap fs-2"></i></div>
-          <div class="fw-semibold">No Courses Selected</div>
+      <div class="comparison-canvas" data-compare-target="comparisonCanvas">
+        <div class="d-flex align-items-center justify-content-center text-muted h-100">
+          <div class="text-center">
+            <div class="mb-2"><i class="bi bi-columns-gap fs-2"></i></div>
+            <div class="fw-semibold">Select at least 2 courses to compare</div>
+          </div>
         </div>
       </div>
     </main>
@@ -86,54 +101,136 @@
 
 <!-- Page-scoped styles -->
 <style>
-  .comparison-canvas{
-    min-height: 64vh;
+  .comparison-canvas {
+    min-height: 70vh;
     border: 2px dashed #e2e8f0;
     border-radius: .75rem;
     background: #fafbfc;
+    padding: 1.5rem;
   }
-  /* Pills inside “Select courses” control */
-  .course-pill{
-    display:inline-flex; align-items:center; gap:.25rem;
-    border-radius:999px; padding:.125rem .5rem; font-size:.8rem;
-    background:#e7f1ff; border:1px solid #d0e4ff;
+
+  /* Course pills in the dropdown button */
+  .course-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    border-radius: 999px;
+    padding: .125rem .5rem;
+    font-size: .75rem;
+    background: #e7f1ff;
+    border: 1px solid #d0e4ff;
+    max-width: 100%;
+    margin: 2px;
   }
-  .course-pill .remove{ cursor:pointer; }
-  /* Make chips visible even when none selected */
-  #selectedCourseChips:empty::before{
-    content:"Select courses";
-    color:#6c757d;
+
+  .course-pill-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+  }
+
+  .course-pill .remove {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 .25rem;
+    flex-shrink: 0;
+  }
+
+  .course-pill .remove:hover {
+    color: #dc3545;
+  }
+
+  /* Comparison table styles */
+  #comparison-table {
+    background: white;
+    border-radius: .5rem;
+    overflow: hidden;
+  }
+
+  #comparison-table .metric-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    min-width: 200px;
+  }
+
+  #comparison-table .course-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    min-width: 280px;
+    max-width: 350px;
+    vertical-align: top;
+  }
+
+  #comparison-table .metric-name {
+    font-weight: 600;
+    background: #fafbfc;
+  }
+
+  /* University logo container with fixed dimensions */
+  .university-logo-container {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: .375rem;
+    padding: 4px;
+  }
+
+  #comparison-table .university-logo {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Better text wrapping for long course names */
+  #comparison-table .course-header .text-break {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  #comparison-table .min-w-0 {
+    min-width: 0;
+  }
+
+  #comparison-table .change-up {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  #comparison-table .change-down {
+    color: #dc3545;
+    font-weight: bold;
+  }
+
+  #comparison-table .change-same {
+    color: #6c757d;
+  }
+
+  #comparison-table .previous-value {
+    font-size: 0.85rem;
+  }
+
+  #comparison-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Sticky dropdown styling */
+  .dropdown-menu {
+    max-width: 100%;
+  }
+
+  .list-group-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Empty state icon */
+  .bi-columns-gap, .bi-funnel, .bi-exclamation-triangle {
+    opacity: 0.3;
   }
 </style>
-
-<!-- Lightweight behavior for chips + clear -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const chipWrap = document.getElementById("selectedCourseChips");
-    const options = document.querySelectorAll(".course-option");
-    const clearBtn = document.getElementById("clearCourses");
-
-    function renderChips(){
-      chipWrap.innerHTML = "";
-      options.forEach(opt => {
-        if(opt.checked){
-          const pill = document.createElement("span");
-          pill.className = "course-pill";
-          pill.dataset.value = opt.value;
-          pill.innerHTML = `<span>${opt.dataset.label.split(",")[0]}</span>
-                            <span class="remove" aria-label="Remove">&times;</span>`;
-          pill.querySelector(".remove").addEventListener("click", (e) => {
-            e.stopPropagation();
-            opt.checked = false;
-            renderChips();
-          });
-          chipWrap.appendChild(pill);
-        }
-      });
-    }
-
-    options.forEach(opt => opt.addEventListener("change", renderChips));
-    clearBtn.addEventListener("click", () => { options.forEach(o => o.checked = false); renderChips(); });
-    renderChips();
-  });
-</script>
