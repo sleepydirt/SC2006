@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   resources :course_stats
 
   # Bookmarks
-  resources :bookmarks, only: [:index, :create, :destroy]
+  resources :bookmarks, only: [ :index, :create, :destroy ]
 
   # Sessions/Logins
   get "login" => "sessions#new", as: :new_session
