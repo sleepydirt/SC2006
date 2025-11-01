@@ -15,6 +15,8 @@ You are able to create an account. Some features are locked behind account creat
     - At least 1 number
     - At least 1 special character
 
+Passwords are hashed and salted with `bcrypt`, using the `has_secure_method` when creating an account. Only the password digest is saved.
+
 #### 1.2 Login
 To login, enter your registered email address and password. 
 
