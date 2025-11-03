@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_26_175920) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_03_055645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_catalog.plpgsql"
@@ -40,6 +40,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_26_175920) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_course_stats_on_course_id"
+  end
+
+  create_table "course_summaries", force: :cascade do |t|
+    t.integer "year"
+    t.decimal "salary_range_min"
+    t.decimal "salary_range_max"
+    t.decimal "employment_rate_overall"
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_course_summaries_on_course_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -75,5 +86,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_26_175920) do
   end
 
   add_foreign_key "course_stats", "courses"
+  add_foreign_key "course_summaries", "courses"
   add_foreign_key "sessions", "users"
 end

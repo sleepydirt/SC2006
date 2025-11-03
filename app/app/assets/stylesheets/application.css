@@ -56,6 +56,169 @@
 .dropdown-toggle.no-caret::after {
   display: none;
 }
+
+.university-logo-container {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: .5rem;
+  padding: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.university-logo {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.hover-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.course-title {
+  line-height: 1.3;
+}
+
+.range-slider-container {
+  position: relative;
+  height: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.range-slider-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #dee2e6;
+  border-radius: 3px;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.range-slider-track {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  background: #0d6efd;
+  border-radius: 3px;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.range-slider-container input[type="range"] {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 20px;
+  margin: 0;
+}
+
+.range-slider-container input[type="range"].range-min {
+  z-index: 3;
+}
+
+.range-slider-container input[type="range"].range-max {
+  z-index: 4;
+}
+
+/* Thumb styling for Webkit (Chrome, Safari, Edge) */
+.range-slider-container input[type="range"]::-webkit-slider-thumb {
+  pointer-events: all;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #0d6efd;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  position: relative;
+  z-index: 5;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  margin-top: -7px;
+}
+
+/* Thumb styling for Firefox */
+.range-slider-container input[type="range"]::-moz-range-thumb {
+  pointer-events: all;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #0d6efd;
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  position: relative;
+  z-index: 5;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.range-slider-container input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+  border: none;
+}
+
+.range-slider-container input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+  border: none;
+}
+
+.range-slider-container input[type="range"]:active::-webkit-slider-thumb {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transform: scale(1.15);
+}
+
+.range-slider-container input[type="range"]:active::-moz-range-thumb {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transform: scale(1.15);
+}
+
+.range-slider-container input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.range-slider-container input[type="range"]:hover::-moz-range-thumb {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.range-slider-container input[type="range"]:focus {
+  outline: none;
+}
+
+.range-slider-container input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.range-slider-container input[type="range"]:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
 /* for mobile */
 @media (max-width: 991.98px) {
   .nav-user.dropdown {

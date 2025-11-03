@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  year: 1
+  salary_range_min: 9.99
+  salary_range_max: 9.99
+  employment_rate_overall: 9.99
+  course: one
+
+two:
+  year: 1
+  salary_range_min: 9.99
+  salary_range_max: 9.99
+  employment_rate_overall: 9.99
+  course: two
