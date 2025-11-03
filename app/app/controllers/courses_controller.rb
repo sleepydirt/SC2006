@@ -38,7 +38,7 @@ class CoursesController < ApplicationController
     if params[:salary_min].present? || params[:salary_max].present?
       salary_min = params[:salary_min].to_f
       salary_max = params[:salary_max].to_f
-      
+
       @courses = @courses.joins(:course_summary)
         .where("course_summaries.salary_range_min >= ? AND course_summaries.salary_range_min <= ?", salary_min, salary_max)
         .or(@courses.joins(:course_summary)
@@ -48,7 +48,7 @@ class CoursesController < ApplicationController
     if params[:employment_rate_min].present? || params[:employment_rate_max].present?
       employment_min = params[:employment_rate_min].to_f
       employment_max = params[:employment_rate_max].to_f
-      
+
       @courses = @courses.joins(:course_summary)
         .where("course_summaries.employment_rate_overall >= ? AND course_summaries.employment_rate_overall <= ?", employment_min, employment_max)
     end
