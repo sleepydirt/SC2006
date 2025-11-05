@@ -1,7 +1,6 @@
 require "test_helper"
 
 class BookmarkFlowTest < ActionDispatch::IntegrationTest
-
   setup do
     # Create test user for authenticated tests
     @user = User.create!(
@@ -177,7 +176,7 @@ class BookmarkFlowTest < ActionDispatch::IntegrationTest
     assert_no_difference("Bookmark.count") do
       post bookmarks_path, params: { course_id: 99999 }
     end
-    
+
     # Verify no bookmark was created for invalid course
     assert_nil Bookmark.find_by(course_id: 99999, user: @user)
   end
