@@ -39,7 +39,7 @@ class CompareController < ApplicationController
           degree: course.degree,
           display_name: "#{course.university} - #{course.degree}"
         }
-      end.sort_by { |c| [c[:university], c[:school], c[:degree]] }
+      end.sort_by { |c| [ c[:university], c[:school], c[:degree] ] }
     else
       @courses = []
     end
