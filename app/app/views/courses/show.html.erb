@@ -1,30 +1,20 @@
-<div class="container-fluid">
+<div data-controller="courses"></div>
+<%= content_tag :div, id: "data", data: { course: @course.to_json, course_stats: @course_stats.to_json } do %>
+<% end %>
+
+<div class="text-center my-5">
   <h1>
     <%= @course.degree %>
   </h1>
   <h4>
     <%= @course.university %>
   </h4>
-  <table class="table">
-    <thead>
-      <tr>
-        <% @course_stats.attribute_names[1, 9].each do |attribute| %>
-          <th>
-            <%= attribute %>
-          </th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <% @course_stats.each do |course_stat| %>
-        <tr>
-          <% course_stat.attributes.values[1, 9].each do |attribute| %>
-            <td>
-              <%= attribute %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+</div>
+<div class="container-fluid d-flex justify-content-evenly my-5">
+  <div class="col-5">
+    <canvas id="left-chart"></canvas>
+  </div>
+  <div class="col-5">
+    <canvas id="right-chart"></canvas>
+  </div>
 </div>
