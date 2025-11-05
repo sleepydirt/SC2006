@@ -28,18 +28,20 @@ class CompareController < ApplicationController
       }
     end
 
-    # Get all unique courses with their details for the dropdown
-    @courses = Course.select(:id, :university, :school, :degree)
-                     .distinct
-                     .order(:university, :school, :degree)
-                     .map do |course|
-      {
-        id: course.id,
-        university: course.university,
-        school: course.school,
-        degree: course.degree,
-        display_name: "#{course.university} - #{course.degree}"
-      }
+    # Get bookmarked courses for the current user
+    if Current.user
+      @courses = Current.user.bookmarks.includes(:course).map do |bookmark|
+        course = bookmark.course
+        {
+          id: course.id,
+          university: course.university,
+          school: course.school,
+          degree: course.degree,
+          display_name: "#{course.university} - #{course.degree}"
+        }
+      end.sort_by { |c| [c[:university], c[:school], c[:degree]] }
+    else
+      @courses = []
     end
 
     # Academic years

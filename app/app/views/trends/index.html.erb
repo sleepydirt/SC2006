@@ -2,20 +2,20 @@
      data-controller="trends"
      data-trends-university-schools-value='<%= @university_schools.to_json %>'
      data-trends-school-degrees-value='<%= @school_degrees.to_json %>'>
-  <div class="row g-4">
+  <div class="row gx-4">
     <!-- Sidebar Filters -->
     <div class="col-lg-3">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 88px;">
         <div class="card-body">
-          <h5 class="card-title mb-4">Filters</h5>
+          <h5 class="fw-semibold mb-3">Filters</h5>
 
           <!-- Field to visualise -->
           <!-- Dynamically generate and replace with a properly-formatted label -->
-          <div class="mb-4">
-            <label class="form-label fw-bold mb-2">Select field to visualise</label>
+          <p class="text-muted mb-2 small">Select field to display</p>
+          <div class="list-group list-group-flush mb-3" id="fieldFilters">
             <% @field_options.each_with_index do |field_option, i| %>
-              <div class="form-check">
-                <input class="form-check-input" 
+              <label class="list-group-item d-flex align-items-center gap-2">
+                <input class="form-check-input me-1" 
                        type="radio" 
                        name="field" 
                        id="field<%= i+1 %>" 
@@ -23,16 +23,14 @@
                        <%= 'checked' if i==0 %>
                        data-trends-target="fieldRadio"
                        data-action="change->trends#fieldChanged">
-                <label class="form-check-label" for="field<%= i+1 %>">
-                  <%= field_option[:label] %>
-                </label>
-              </div>
+                <span><%= field_option[:label] %></span>
+              </label>
             <% end %>
           </div>
 
           <!-- University Filter -->
           <div class="mb-3">
-            <label class="form-label fw-bold mb-2">Select University</label>
+            <label class="form-label fw-semibold">Select University</label>
             <select class="form-select" 
                     data-trends-target="universitySelect"
                     data-action="change->trends#universityChanged">
@@ -45,7 +43,7 @@
 
           <!-- School Filter -->
           <div class="mb-3">
-            <label class="form-label fw-bold mb-2">Select School</label>
+            <label class="form-label fw-semibold">Select School</label>
             <select class="form-select" 
                     data-trends-target="schoolSelect"
                     data-action="change->trends#schoolChanged"
@@ -56,7 +54,7 @@
 
           <!-- Degree Filter -->
           <div class="mb-3">
-            <label class="form-label fw-bold mb-2">Select Degrees (up to 3 for comparison)</label>
+            <label class="form-label fw-semibold">Select Degrees (up to 3 for comparison)</label>
             <select class="form-select" 
                     data-trends-target="degreeSelect"
                     multiple 
@@ -78,11 +76,9 @@
 
     <!-- Chart Area -->
     <div class="col-lg-9">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
-            <canvas data-trends-target="canvas"></canvas>
-          </div>
+      <div class="trends-canvas">
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
+          <canvas data-trends-target="canvas"></canvas>
         </div>
       </div>
     </div>
