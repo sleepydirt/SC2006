@@ -60,27 +60,49 @@
             </button>
 
             <div class="dropdown-menu p-0 w-100 shadow rounded-3 overflow-hidden">
-              <div class="p-2 border-bottom small text-muted">Available Courses</div>
-              <div class="list-group list-group-flush" style="max-height: 400px; overflow:auto;" data-compare-target="courseList">
-                <% @courses.each do |course| %>
-                  <label class="list-group-item d-flex align-items-start gap-2 py-2" data-course-id="<%= course[:id] %>">
-                    <input class="form-check-input me-1 mt-1 flex-shrink-0" 
-                           type="checkbox" 
-                           value="<%= course[:id] %>" 
-                           data-label="<%= course[:display_name] %>"
-                           data-compare-target="courseOption"
-                           data-action="change->compare#courseChanged">
-                    <div class="flex-grow-1">
-                      <div class="small"><%= course[:degree] %></div>
-                      <small class="text-muted"><%= course[:university] %></small>
-                    </div>
-                  </label>
-                <% end %>
-              </div>
+              <% if @courses.empty? %>
+                <div class="p-3 text-center">
+                  <div class="text-muted mb-2">No bookmarks present</div>
+                  <a href="/courses/query" class="btn btn-sm btn-primary">
+                    Search for courses
+                  </a>
+                </div>
+              <% elsif @courses.length == 1 %>
+                <div class="p-3 text-center">
+                  <div class="text-muted mb-2">You need at least 2 bookmarks to use the compare feature!</div>
+                  <a href="/courses/query" class="btn btn-sm btn-primary">
+                    Search for courses
+                  </a>
+                </div>
+              <% else %>
+                <div class="p-2 border-bottom small text-muted">Your Bookmarked Courses</div>
+                <div class="list-group list-group-flush" style="max-height: 400px; overflow:auto;" data-compare-target="courseList">
+                  <% @courses.each do |course| %>
+                    <label class="list-group-item d-flex align-items-start gap-2 py-2" data-course-id="<%= course[:id] %>">
+                      <input class="form-check-input me-1 mt-1 flex-shrink-0" 
+                             type="checkbox" 
+                             value="<%= course[:id] %>" 
+                             data-label="<%= course[:display_name] %>"
+                             data-compare-target="courseOption"
+                             data-action="change->compare#courseChanged">
+                      <div class="flex-grow-1">
+                        <div class="small"><%= course[:degree] %></div>
+                        <small class="text-muted"><%= course[:university] %></small>
+                      </div>
+                    </label>
+                  <% end %>
+                </div>
+              <% end %>
             </div>
           </div>
 
-          <div class="form-text mt-2">Select 2-5 courses to compare.</div>
+          <div class="form-text mt-2">
+            <% if @courses.length < 2 %>
+              Add at least 2 bookmarks to start comparing courses.
+            <% else %>
+              Select 2-5 courses to compare.
+            <% end %>
+          </div>
         </div>
       </div>
     </aside>
