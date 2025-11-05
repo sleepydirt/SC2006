@@ -70,3 +70,5 @@ gem "csv", "~> 3.3"
 gem "pg", "~> 1.6"
 
 gem "pg_search", "~> 2.3"
+
+gem "rails-controller-testing"
