@@ -37,7 +37,7 @@ You can enter keywords and select certain filters (by university, employment rat
 The homepage also contains a few quick access links below the search bar for easy access to commonly-used features (Bookmarks, Profile, View courses). The view courses button will display all available courses.
 
 ### 3. Trends
-You can select up to 3 courses from a particular university and faculty to compare the trends of. This will display a time series chart, allowing you to see the change over time of each metric.
+You can select up to 5 bookmarks to compare the trend over time for a particular metric. This will display a time series chart, allowing you to see the change over time of each metric.
 
 ### 4. Compare
 You can select up to 5 bookmarks to build a comparison table. Choose one or more metrics to be displayed side-by-side, and select the academic year to retrieve data from. An indicator is provided to show the relative year-on-year change.
