@@ -1,27 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["canvas", "universitySelect", "schoolSelect", "degreeSelect", "fieldRadio"]
+  static targets = [
+    "canvas", 
+    "fieldRadio", 
+    "courseOption", 
+    "selectedCourseChips", 
+    "clearCourses", 
+    "courseList"
+  ]
   static values = {
-    universitySchools: Object,
-    schoolDegrees: Object
+    courses: Array
   }
 
   static colors = [
     { bg: 'rgba(100,149,237,0.6)', border: '#6495ed' },
     { bg: 'rgba(255,107,107,0.6)', border: '#ff6b6b' },
-    { bg: 'rgba(72,201,176,0.6)', border: '#48c9b0' }
+    { bg: 'rgba(72,201,176,0.6)', border: '#48c9b0' },
+    { bg: 'rgba(255,193,7,0.6)', border: '#ffc107' },
+    { bg: 'rgba(220,53,69,0.6)', border: '#dc3545' }
   ]
 
   connect() {
     console.log("Trends controller connected")
     this.chart = null
     this.programsCache = null
+    this.selectedCourses = []
     
     // Load Chart.js dynamically
     this.loadChartJS().then(() => {
       this.initialiseCanvas()
     })
+    
+    this.renderChips()
   }
 
   disconnect() {
@@ -61,110 +72,141 @@ export default class extends Controller {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(
-      'Please select university, school, and degree(s) to view trends',
+      'Please select at least one course to view trends',
       this.canvasTarget.width / 2,
       this.canvasTarget.height / 2
     )
   }
 
-  universityChanged() {
-    console.log("University changed:", this.universitySelectTarget.value)
-    this.updateSchoolOptions()
-    this.updateDegreeOptions()
+  // Handle course selection/deselection
+  courseChanged(event) {
+    const checkbox = event.target;
+    const courseId = parseInt(checkbox.value);
+
+    if (checkbox.checked) {
+      // Check if we've reached the maximum of 5 courses
+      if (this.selectedCourses.length >= 5) {
+        checkbox.checked = false;
+        alert("You can select a maximum of 5 courses for trends analysis.");
+        return;
+      }
+      this.selectedCourses.push(courseId);
+    } else {
+      this.selectedCourses = this.selectedCourses.filter(
+        (id) => id !== courseId
+      );
+    }
+
+    this.renderChips();
+    this.reorderCourseList();
+    this.updateChart();
   }
 
-  schoolChanged() {
-    console.log("School changed:", this.schoolSelectTarget.value)
-    this.updateDegreeOptions()
+  // Reorder course list: selected courses first, then alphabetical
+  reorderCourseList() {
+    if (!this.hasCourseListTarget) return;
+
+    const listItems = Array.from(
+      this.courseListTarget.querySelectorAll("label[data-course-id]")
+    );
+
+    listItems.sort((a, b) => {
+      const aId = parseInt(a.dataset.courseId);
+      const bId = parseInt(b.dataset.courseId);
+      const aSelected = this.selectedCourses.includes(aId);
+      const bSelected = this.selectedCourses.includes(bId);
+
+      // Selected items first
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+
+      // Then sort alphabetically by label
+      const aLabel = a.querySelector("input").dataset.label;
+      const bLabel = b.querySelector("input").dataset.label;
+      return aLabel.localeCompare(bLabel);
+    });
+
+    // Reappend in new order
+    listItems.forEach((item) => this.courseListTarget.appendChild(item));
+  }
+
+  // Clear all selected courses
+  clearAllCourses() {
+    this.courseOptionTargets.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    this.selectedCourses = [];
+    this.renderChips();
+    this.updateChart();
+  }
+
+  // Render course chips in the dropdown button
+  renderChips() {
+    const chipWrap = this.selectedCourseChipsTarget;
+    chipWrap.innerHTML = "";
+
+    if (this.selectedCourses.length === 0) {
+      const placeholder = document.createElement("span");
+      placeholder.className = "text-muted";
+      placeholder.textContent = "Select courses";
+      chipWrap.appendChild(placeholder);
+      return;
+    }
+
+    this.selectedCourses.forEach((courseId) => {
+      const course = this.coursesValue.find((c) => c.id === courseId);
+      if (!course) return;
+
+      const chip = document.createElement("div");
+      chip.className = "course-pill";
+      chip.innerHTML = `
+        <span class="course-pill-text">${course.display_name}</span>
+        <span class="remove" data-course-id="${courseId}">&times;</span>
+      `;
+
+      // Add click handler for remove button
+      chip.querySelector(".remove").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.removeCourse(courseId);
+      });
+
+      chipWrap.appendChild(chip);
+    });
+  }
+
+  // Remove a course from selection
+  removeCourse(courseId) {
+    // Uncheck the checkbox
+    const checkbox = this.courseOptionTargets.find(
+      (cb) => parseInt(cb.value) === courseId
+    );
+    if (checkbox) checkbox.checked = false;
+
+    // Remove from selected array
+    this.selectedCourses = this.selectedCourses.filter((id) => id !== courseId);
+
+    this.renderChips();
+    this.reorderCourseList();
+    this.updateChart();
   }
 
   fieldChanged() {
-    // Only update chart if there's already cached data
-    // Not sure how much performance gains this gives, generating charts shouldn't be too intensive
-    if (this.programsCache) {
-      const field = this.fieldRadioTargets.find(radio => radio.checked)?.value
-      const chartData = this.generateChartData(field, this.programsCache)
-      this.createChart(chartData, field)
-    }
-  }
-
-  updateSchoolOptions() {
-    const university = this.universitySelectTarget.value
-    console.log("update schools for university:", university)
-    
-    // Reset school and degree selects if the university is changed
-    this.schoolSelectTarget.innerHTML = '<option value="">Select a school</option>'
-    this.degreeSelectTarget.innerHTML = '<option value="">Select degrees...</option>'
-    this.degreeSelectTarget.disabled = true
-
-    if (!university) {
-      this.schoolSelectTarget.disabled = true
-      return
-    }
-
-    this.schoolSelectTarget.disabled = false
-
-    // Get all the schools available
-    const schools = this.universitySchoolsValue[university] || []
-    const uniqueSchools = [...new Set(schools.map(s => s.school))].sort()
-
-    console.log("Found schools:", uniqueSchools)
-
-    uniqueSchools.forEach(school => {
-      const option = document.createElement('option')
-      option.value = school
-      option.textContent = school
-      this.schoolSelectTarget.appendChild(option)
-    })
-  }
-
-  updateDegreeOptions() {
-    const university = this.universitySelectTarget.value
-    const school = this.schoolSelectTarget.value
-
-    this.degreeSelectTarget.innerHTML = '<option value="">Select degrees...</option>'
-    
-    if (!university || !school) {
-      this.degreeSelectTarget.disabled = true
-      return
-    }
-
-    this.degreeSelectTarget.disabled = false
-
-    // Get degrees
-    const key = `${university}|${school}`
-    const degrees = this.schoolDegreesValue[key] || []
-    const uniqueDegrees = [...new Set(degrees.map(d => d.degree))].sort()
-
-    uniqueDegrees.forEach(degree => {
-      const option = document.createElement('option')
-      option.value = degree
-      option.textContent = degree
-      this.degreeSelectTarget.appendChild(option)
-    })
-    
-    // Clear previous selection
-    this.degreeSelectTarget.selectedIndex = -1
+    // Update chart when field selection changes
+    this.updateChart();
   }
 
   async updateChart() {
     const field = this.fieldRadioTargets.find(radio => radio.checked)?.value
-    const university = this.universitySelectTarget.value
-    const school = this.schoolSelectTarget.value
-    const selectedDegrees = Array.from(this.degreeSelectTarget.selectedOptions)
-      .map(option => option.value)
-      .filter(value => value)
-      .slice(0, 3)
 
-    if (!university || !school || selectedDegrees.length === 0 || !field) {
-      return
+    if (this.selectedCourses.length === 0 || !field) {
+      this.initialiseCanvas();
+      return;
     }
 
-    // Fetch data from API at the /trends/data endpoint (see trends_controller.rb)
+    // Fetch data from API at the /trends/data endpoint
     const params = new URLSearchParams({
-      university,
-      school,
-      degrees: selectedDegrees.join(','),
+      course_ids: this.selectedCourses.join(','),
       field
     })
 
@@ -179,35 +221,32 @@ export default class extends Controller {
       this.createChart(chartData, field)
     } catch (error) {
       console.error("Failed to fetch trends data:", error)
+      this.initialiseCanvas();
     }
   }
 
   generateChartData(field, programs) {
-    const selectedDegrees = Array.from(this.degreeSelectTarget.selectedOptions)
-      .map(option => option.value)
-      .filter(value => value)
-      .slice(0, 3)
-
-    if (selectedDegrees.length === 0) {
+    if (this.selectedCourses.length === 0) {
       return { labels: [], datasets: [] }
     }
 
     // Generate years from 2013 to 2023
     const years = Array.from({ length: 11 }, (_, i) => (2013 + i).toString())
 
-    const datasets = selectedDegrees.map((degree, idx) => {
-      const degreeData = programs.filter(p => p.degree === degree)
+    const datasets = this.selectedCourses.map((courseId, idx) => {
+      const courseData = programs.filter(p => p.course_id === courseId)
+      const course = this.coursesValue.find(c => c.id === courseId)
 
       // Create a map of year to value
       const dataByYear = {}
-      degreeData.forEach(p => {
+      courseData.forEach(p => {
         dataByYear[p.year] = parseFloat(p[field]) || 0
       })
 
       const data = years.map(year => dataByYear[year] ?? null)
 
       return {
-        label: degree,
+        label: course ? course.degree : `Course ${courseId}`,
         data,
         backgroundColor: this.constructor.colors[idx % this.constructor.colors.length].bg,
         borderColor: this.constructor.colors[idx % this.constructor.colors.length].border,

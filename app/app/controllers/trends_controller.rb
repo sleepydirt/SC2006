@@ -26,50 +26,61 @@ class TrendsController < ApplicationController
       }
     end
 
-    # Only load unique universities, schools, and degrees for dropdowns
-    @universities = Course.select(:university).distinct.order(:university).pluck(:university)
-
-    # Get unique university-school combinations for faster filtering
-    @university_schools = Course.select(:university, :school).distinct.map do |c|
-      { university: c.university, school: c.school }
-    end.group_by { |item| item[:university] }
-
-    # Get unique university-school-degree combinations
-    @school_degrees = Course.select(:university, :school, :degree).distinct.map do |c|
-      { university: c.university, school: c.school, degree: c.degree }
-    end.group_by { |item| "#{item[:university]}|#{item[:school]}" }
+    # Get bookmarked courses for the current user
+    if Current.user
+      @courses = Current.user.bookmarks.includes(:course).map do |bookmark|
+        course = bookmark.course
+        {
+          id: course.id,
+          university: course.university,
+          school: course.school,
+          degree: course.degree,
+          display_name: "#{course.university} - #{course.degree}"
+        }
+      end.sort_by { |c| [ c[:university], c[:school], c[:degree] ] }
+    else
+      @courses = []
+    end
   end
 
-  # API endpoint to fetch filtered data
-  # The prev approach loaded the entire database into a variable programs, it is fine since our dataset has only ~1000 rows, but in practice its better to only retrieve from the db when necessary
-  # We can potentially reuse this later on when creating the Compare page and retrieve via this endpoint, this is just a hack for now
+  # API endpoint to fetch trends data for selected courses
   def data
-    university = params[:university]
-    school = params[:school]
-    degrees = params[:degrees]&.split(",") || []
+    course_ids = params[:course_ids]&.split(",")&.map(&:to_i) || []
     field = params[:field]
 
-    # Build the query
-    query = CourseStat.includes(:course)
-                      .where(courses: { university: university, school: school })
+    if course_ids.empty? || !field
+      render json: { error: "Missing required parameters" }, status: :bad_request
+      return
+    end
 
-    query = query.where(courses: { degree: degrees }) if degrees.any?
+    # Limit to maximum 5 courses
+    course_ids = course_ids.first(5)
 
     # Get visualizable fields
     excluded_columns = %w[id year course_id created_at updated_at]
     vis_fields = CourseStat.column_names.reject { |col| excluded_columns.include?(col) }
 
+    if !vis_fields.include?(field)
+      render json: { error: "Invalid field" }, status: :bad_request
+      return
+    end
+
+    # Build the query to get stats for selected courses
+    query = CourseStat.includes(:course)
+                      .where(course_id: course_ids)
+
     # Map the results
     programs = query.map do |stat|
       program_data = {
+        course_id: stat.course.id,
         university: stat.course.university,
         school: stat.course.school,
         degree: stat.course.degree,
         year: stat.year
       }
 
-      # Only include the requested field to reduce payload size
-      program_data[field.to_sym] = stat.send(field).to_f if field && vis_fields.include?(field)
+      # Include the requested field
+      program_data[field.to_sym] = stat.send(field).to_f
 
       program_data
     end

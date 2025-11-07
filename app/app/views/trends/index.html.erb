@@ -1,16 +1,14 @@
 <div class="container-fluid py-4" 
      data-controller="trends"
-     data-trends-university-schools-value='<%= @university_schools.to_json %>'
-     data-trends-school-degrees-value='<%= @school_degrees.to_json %>'>
+     data-trends-courses-value='<%= @courses.to_json %>'>
   <div class="row gx-4">
     <!-- Sidebar Filters -->
-    <div class="col-lg-3">
+    <aside class="col-12 col-lg-3 mb-4 mb-lg-0">
       <div class="card shadow-sm border-0 sticky-top" style="top: 88px;">
         <div class="card-body">
           <h5 class="fw-semibold mb-3">Filters</h5>
 
           <!-- Field to visualise -->
-          <!-- Dynamically generate and replace with a properly-formatted label -->
           <p class="text-muted mb-2 small">Select field to display</p>
           <div class="list-group list-group-flush mb-3" id="fieldFilters">
             <% @field_options.each_with_index do |field_option, i| %>
@@ -28,59 +26,73 @@
             <% end %>
           </div>
 
-          <!-- University Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Select University</label>
-            <select class="form-select" 
-                    data-trends-target="universitySelect"
-                    data-action="change->trends#universityChanged">
-              <option value="">Select a university</option>
-              <% @universities.each do |u| %>
-                <option value="<%= u %>"><%= u %></option>
+          <!-- Course Selector -->
+          <div class="mb-2 d-flex align-items-center justify-content-between">
+            <label class="form-label m-0 fw-semibold">Select courses</label>
+            <button class="btn btn-link p-0 small" 
+                    data-trends-target="clearCourses"
+                    data-action="click->trends#clearAllCourses" 
+                    type="button">Clear</button>
+          </div>
+
+          <div class="dropdown w-100">
+            <button class="form-control d-flex justify-content-between align-items-center" 
+                    data-bs-toggle="dropdown" 
+                    type="button" 
+                    aria-expanded="false">
+              <span data-trends-target="selectedCourseChips" 
+                    class="d-flex flex-wrap gap-1"></span>
+              <span class="ms-auto text-muted"><i class="bi bi-chevron-down"></i></span>
+            </button>
+
+            <div class="dropdown-menu p-0 w-100 shadow rounded-3 overflow-hidden">
+              <% if @courses.empty? %>
+                <div class="p-3 text-center">
+                  <div class="text-muted mb-2">No bookmarks present</div>
+                  <a href="/courses/query" class="btn btn-sm btn-primary">
+                    Search for courses
+                  </a>
+                </div>
+              <% else %>
+                <div class="p-2 border-bottom small text-muted">Your Bookmarked Courses</div>
+                <div class="list-group list-group-flush" style="max-height: 400px; overflow:auto;" data-trends-target="courseList">
+                  <% @courses.each do |course| %>
+                    <label class="list-group-item d-flex align-items-start gap-2 py-2" data-course-id="<%= course[:id] %>">
+                      <input class="form-check-input me-1 mt-1 flex-shrink-0" 
+                             type="checkbox" 
+                             value="<%= course[:id] %>" 
+                             data-label="<%= course[:display_name] %>"
+                             data-trends-target="courseOption"
+                             data-action="change->trends#courseChanged">
+                      <div class="flex-grow-1">
+                        <div class="small"><%= course[:degree] %></div>
+                        <small class="text-muted"><%= course[:university] %></small>
+                      </div>
+                    </label>
+                  <% end %>
+                </div>
               <% end %>
-            </select>
+            </div>
           </div>
 
-          <!-- School Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Select School</label>
-            <select class="form-select" 
-                    data-trends-target="schoolSelect"
-                    data-action="change->trends#schoolChanged"
-                    disabled>
-              <option value="">Select a school</option>
-            </select>
+          <div class="form-text mt-2">
+            <% if @courses.empty? %>
+              Add bookmarks to start viewing trends.
+            <% else %>
+              Select 1-5 courses to view trends.
+            <% end %>
           </div>
-
-          <!-- Degree Filter -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Select Degrees (up to 3 for comparison)</label>
-            <select class="form-select" 
-                    data-trends-target="degreeSelect"
-                    multiple 
-                    size="8" 
-                    disabled>
-              <option value="">Select degrees...</option>
-            </select>
-            <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
-          </div>
-
-          <!-- Apply Filters -->
-          <button class="btn btn-primary w-100 mt-3" 
-                  data-action="click->trends#updateChart">
-            Apply Filters
-          </button>
         </div>
       </div>
-    </div>
+    </aside>
 
     <!-- Chart Area -->
-    <div class="col-lg-9">
+    <main class="col-12 col-lg-9">
       <div class="trends-canvas">
         <div class="d-flex justify-content-center align-items-center" style="min-height: 500px;">
           <canvas data-trends-target="canvas"></canvas>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
