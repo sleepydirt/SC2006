@@ -10,6 +10,11 @@
                 <button class="btn btn-primary d-flex align-items-center" type="submit" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                     <i class="bi bi-search"></i>
                 </button>
+
+                <%= form.hidden_field :salary_min, value: 0 %>
+                <%= form.hidden_field :salary_max, value: 10000 %>
+                <%= form.hidden_field :employment_rate_min, value: 0 %>
+                <%= form.hidden_field :employment_rate_max, value: 100 %>
             </div>
             <% end %>
 
